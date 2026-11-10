@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BukuKas & Jastip Tracker - Auto SPS Terhubung</title>
+  <title>BukuKas & Jastip Tracker</title>
   
   <!-- Font Modern & Tailwind CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,11 +58,63 @@
     .animate-pulse-fast {
       animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* Transisi Geser Halus untuk Layar Pembuka */
+    #splash-screen {
+      transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.75s ease;
+    }
+    #splash-screen.slide-up {
+      transform: translateY(-100%);
+      opacity: 0.95;
+    }
   </style>
 </head>
 <body class="bg-[#94B5B0] text-[#1E3631] min-h-screen relative overflow-x-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
-  <!-- BACKGROUND BLOBS -->
+  <!-- ============================================================== -->
+  <!-- [LAYAR PEMBUKA / SPLASH SCREEN: KEUANGAN]                      -->
+  <!-- ============================================================== -->
+  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 bg-gradient-to-br from-[#1E3631] via-[#5B8780] to-[#94B5B0] flex flex-col items-center justify-between p-6 text-center select-none cursor-pointer overflow-hidden">
+    
+    <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/20 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/40 blur-3xl pointer-events-none"></div>
+
+    <div class="w-full flex items-center justify-between max-w-sm pt-4 z-10">
+      <span class="text-[11px] font-extrabold tracking-widest text-[#FAF5EB]/70 uppercase flex items-center gap-1.5">
+        <i class="fa-solid fa-cloud text-emerald-300"></i> Cloud Synced
+      </span>
+      <span class="text-[11px] font-bold text-[#FAF5EB]/60" id="splash-date">Hari Ini</span>
+    </div>
+
+    <div class="flex flex-col items-center space-y-5 my-auto z-10 px-4">
+      <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-[#FAF5EB] text-[#1E3631] shadow-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-[#F9CE77] transform hover:scale-105 transition duration-300">
+        <i class="fa-solid fa-wallet text-[#5B8780]"></i>
+      </div>
+
+      <div class="space-y-1.5">
+        <h1 class="text-3xl md:text-5xl font-black text-[#FAF5EB] tracking-tight uppercase drop-shadow-md">
+          KEUANGAN
+        </h1>
+        <p class="text-xs md:text-sm font-semibold text-[#FAF5EB]/80 max-w-xs mx-auto">
+          Arus Kas Multi-Pemilik & Modul Order Jastip
+        </p>
+      </div>
+
+      <!-- Pemilik Info Mini Badges (Dinamis) -->
+      <div id="splash-owners-container" class="flex flex-wrap items-center justify-center gap-1.5 max-w-xs px-3 py-1.5 rounded-2xl bg-black/20 backdrop-blur-md border border-white/20 text-[#FAF5EB] text-xs font-bold">
+      </div>
+    </div>
+
+    <div class="w-full max-w-xs pb-6 z-10 space-y-3">
+      <button type="button" class="w-full py-3.5 px-6 rounded-2xl bg-[#F9CE77] hover:bg-[#ebd28b] active:scale-95 text-[#1E3631] font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 transition duration-200">
+        <span>Buka Dasbor</span>
+        <i class="fa-solid fa-arrow-up text-xs"></i>
+      </button>
+      <p class="text-[10px] text-[#FAF5EB]/60 font-medium">Klik di mana saja untuk membuka</p>
+    </div>
+  </div>
+
+  <!-- BACKGROUND BLOBS DASBOR UTAMA -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
     <svg class="absolute -bottom-16 -left-16 w-64 md:w-[480px] text-[#F9CE77]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <path fill="currentColor" d="M38.1,-63.9C49.9,-58.5,60.4,-49.6,67.6,-38.3C74.9,-27,78.8,-13.5,77.7,-0.6C76.6,12.2,70.5,24.5,63.1,36C55.6,47.6,46.8,58.4,35.4,64.8C24,71.2,12,73.1,-0.6,74.1C-13.1,75.1,-26.3,75.1,-38.3,69.5C-50.4,63.9,-61.4,52.7,-68.6,39.6C-75.9,26.5,-79.4,11.5,-78.2,-3C-77,-17.5,-71.1,-31.6,-62.1,-43C-53.1,-54.4,-41,-63.2,-28.4,-67.9C-15.8,-72.6,-2.6,-73.2,9.9,-68.8C22.4,-64.4,34.8,-69.3,38.1,-63.9Z" transform="translate(100 100)" />
@@ -74,17 +126,23 @@
 
   <div class="relative z-10 flex flex-col min-h-screen pb-16">
     
-    <!-- HEADER UTAMA -->
+    <!-- HEADER UTAMA DASBOR -->
     <header class="px-4 md:px-6 pt-4 pb-2">
       <div class="max-w-6xl mx-auto banner-glass-card rounded-2xl p-3 md:px-6 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
         
-        <div class="flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl bg-[#5B8780] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold">
-            <i class="fa-solid fa-shapes"></i>
+        <!-- [IKON & BRAND FLOWMASTER: KLIK UNTUK KEMBALI KE DASBOR PEMBUKAAN] -->
+        <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Klik untuk kembali ke Layar Pembuka (KEUANGAN)">
+          <div class="w-10 h-10 rounded-xl bg-[#5B8780] group-hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold transition transform group-hover:-translate-y-0.5">
+            <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform duration-300"></i>
           </div>
           <div>
-            <h1 class="text-base md:text-lg font-extrabold text-[#1E3631] tracking-tight leading-none">FlowMaster</h1>
-            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan & Modul Jastip</p>
+            <div class="flex items-center gap-1.5">
+              <h1 class="text-base md:text-lg font-extrabold text-[#1E3631] tracking-tight leading-none group-hover:text-[#5B8780] transition">FlowMaster</h1>
+              <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-[#5B8780]/15 text-[#5B8780] font-extrabold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Menu
+              </span>
+            </div>
+            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan Personal & Jastip</p>
           </div>
         </div>
 
@@ -92,7 +150,7 @@
         <nav class="flex items-center gap-2 p-1 bg-white/60 border border-white rounded-xl w-full sm:w-auto justify-center">
           <button onclick="switchMainTab('tab-kas')" id="nav-tab-kas" class="header-tab-btn active px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2">
             <i class="fa-solid fa-wallet"></i>
-            <span>Kas Harian</span>
+            <span>Kas & Dompet</span>
           </button>
           
           <button onclick="switchMainTab('tab-jastip')" id="nav-tab-jastip" class="header-tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2">
@@ -103,7 +161,6 @@
 
         <!-- KONEKSI OTOMATIS SPS & TANGGAL -->
         <div class="flex items-center gap-2">
-          <!-- Indikator SPS Otomatis (Klik untuk Refresh Data Manual) -->
           <button onclick="fetchFromSps(true)" id="sps-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 border border-white text-xs font-bold text-[#1E3631] hover:bg-white transition shadow-sm active:scale-95" title="Klik untuk refresh sinkronisasi SPS">
             <span id="sps-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow"></span>
             <span id="sps-status-text">SPS Terhubung</span>
@@ -121,9 +178,57 @@
     <main class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex-1 w-full">
 
       <!-- ============================================================== -->
-      <!-- [MODUL 1] KAS HARIAN                                           -->
+      <!-- [MODUL 1] KAS HARIAN, MINGGUAN & BULANAN                       -->
       <!-- ============================================================== -->
-      <section id="module-kas" class="space-y-4 md:space-y-6">
+      <section id="module-kas" class="space-y-4 md:space-y-5">
+        
+        <!-- BAR RINGKAS FILTER (MODE SEMBUNYI / MINIMALIS) -->
+        <div class="banner-glass-card rounded-2xl p-2.5 md:p-3 flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-[#5B8780] font-bold">Filter Aktif:</span>
+            <span id="badge-filter-summary" class="px-2.5 py-1 rounded-lg bg-white/80 border border-white text-xs font-bold text-[#1E3631]">
+              📅 Bulan Ini • 👤 Semua Pemilik
+            </span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <!-- Tombol Buka/Tutup Filter -->
+            <button onclick="toggleFilterDrawer()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-filter text-[#5B8780]"></i>
+              <span>Sesuaikan Filter</span>
+              <i id="filter-chevron" class="fa-solid fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200"></i>
+            </button>
+
+            <!-- Tombol Kelola Pemilik -->
+            <button onclick="openManageOwnersModal()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5" title="Tambah / Hapus Nama Pemilik">
+              <i class="fa-solid fa-users text-[#5B8780]"></i>
+              <span class="hidden sm:inline">Kelola Pemilik</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANEL FILTER TERSEMBUNYI (DRAWER) -->
+        <div id="filter-drawer-panel" class="hidden banner-glass-card rounded-2xl p-3 md:p-4 space-y-3 border border-white/80 transition-all">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Periode Waktu</label>
+              <select id="select-time-filter" onchange="onSelectTimeChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
+                <option value="hari_ini">Hari Ini</option>
+                <option value="minggu_ini">Minggu Ini (7 Hari Terakhir)</option>
+                <option value="bulan_ini" selected>Bulan Ini</option>
+                <option value="semua">Semua Periode</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pemilik Pengeluaran</label>
+              <select id="select-owner-filter" onchange="onSelectOwnerChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB NAVIGASI KAS & FOTO NOTA -->
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-white/60">
             <button onclick="switchKasView('kas-dash')" id="sub-kas-dash" class="sub-menu-btn active px-3 py-1.5 rounded-lg text-xs font-bold">Dashboard</button>
@@ -137,25 +242,45 @@
         </div>
 
         <!-- 1.1 Dashboard Kas -->
-        <div id="view-kas-dash" class="space-y-4 md:space-y-6">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-5">
+        <div id="view-kas-dash" class="space-y-4 md:space-y-5">
+          
+          <!-- 3 KPI Utama -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
             <div class="banner-glass-card rounded-2xl p-4 md:p-5">
-              <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Pemasukan</p>
+              <div class="flex justify-between items-center">
+                <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Pemasukan</p>
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold" id="badge-period-income">Bulan Ini</span>
+              </div>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#237059] mt-0.5" id="kpi-income">Rp 0</h3>
             </div>
+            
             <div class="banner-glass-card rounded-2xl p-4 md:p-5">
-              <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Pengeluaran</p>
+              <div class="flex justify-between items-center">
+                <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Total Pengeluaran</p>
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold" id="badge-period-expense">Bulan Ini</span>
+              </div>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#C04848] mt-0.5" id="kpi-expense">Rp 0</h3>
             </div>
+
             <div class="banner-glass-card rounded-2xl p-4 md:p-5 border-l-4 border-[#5B8780]">
               <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Sisa Saldo Kas</p>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#1E3631] mt-0.5" id="kpi-balance">Rp 0</h3>
             </div>
           </div>
 
+          <!-- KARTU PENGELUARAN SETIAP PEMILIK (DINAMIS & OTOMATIS) -->
+          <div>
+            <p class="text-xs font-bold text-[#5B8780] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie"></i> Pengeluaran Per Pemilik
+            </p>
+            <div id="dynamic-owner-cards-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            </div>
+          </div>
+
+          <!-- Charts -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <div class="lg:col-span-2 banner-glass-card rounded-2xl p-4 md:p-6">
-              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Visualisasi Arus Kas</h3>
+              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Perbandingan Pengeluaran Pemilik</h3>
               <div class="h-48 md:h-60 relative">
                 <canvas id="cashflowBarChart"></canvas>
               </div>
@@ -194,10 +319,22 @@
           </div>
 
           <div class="banner-glass-card rounded-3xl p-5 md:p-7">
-            <h2 class="text-lg font-extrabold text-[#1E3631] mb-4 text-center">Formulir Kas Harian</h2>
+            <h2 class="text-lg font-extrabold text-[#1E3631] mb-4 text-center">Catat Kas & Pengeluaran</h2>
             <form id="kas-transaction-form" class="space-y-4">
+              
+              <!-- PEMILIH PENGELUARAN SIAPA -->
               <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe</label>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Milik Siapa?</label>
+                  <button type="button" onclick="openManageOwnersModal()" class="text-[10px] text-[#5B8780] hover:underline font-bold">+ Kelola Pemilik</button>
+                </div>
+                <div id="form-owner-radios" class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-1.5 bg-white/60 rounded-xl border border-white">
+                </div>
+              </div>
+
+              <!-- TIPE -->
+              <div>
+                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe Transaksi</label>
                 <div class="grid grid-cols-2 gap-2 p-1 bg-white/60 rounded-xl border border-white">
                   <label class="cursor-pointer">
                     <input type="radio" name="kas_type" id="type_pemasukan" value="pemasukan" class="peer sr-only">
@@ -214,29 +351,39 @@
                 </div>
               </div>
 
+              <!-- TANGGAL -->
+              <div>
+                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tanggal</label>
+                <input type="date" id="kas_date" required class="w-full px-4 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
+              </div>
+
+              <!-- NOMINAL -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nominal (Rp)</label>
                 <input type="text" id="kas_amount" required inputmode="numeric" placeholder="0" class="currency-input w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-base font-extrabold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
+              <!-- KATEGORI -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Kategori</label>
                 <select id="kas_category" class="w-full px-3 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-semibold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
-                  <option value="Operasional">Operasional Usaha / Belanja</option>
-                  <option value="Makan & Minum">Makan & Konsumsi</option>
+                  <option value="Makan & Minum">Makan & Jajan</option>
+                  <option value="Belanja / Skincare">Belanja & Kebutuhan Pribadi</option>
+                  <option value="Operasional">Operasional Usaha / Kerja</option>
                   <option value="Transport">Bensin & Transportasi</option>
-                  <option value="Omset">Omset / Kasir</option>
+                  <option value="Omset / Gaji">Gaji / Omset Masuk</option>
                   <option value="Lain-lain">Lain-lain</option>
                 </select>
               </div>
 
+              <!-- KETERANGAN -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Keterangan</label>
-                <input type="text" id="kas_desc" placeholder="Contoh: Beli bensin, Nota Indomaret" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
+                <input type="text" id="kas_desc" placeholder="Contoh: Kopi, Skincare, Bensin" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
               <button type="submit" id="kas-btn-submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
-                <span>Simpan Catatan Kas</span>
+                <span>Simpan Transaksi Kas</span>
               </button>
             </form>
           </div>
@@ -252,14 +399,15 @@
             <table class="w-full text-left border-collapse text-xs md:text-sm">
               <thead>
                 <tr class="bg-white/40 border-b border-white text-[10px] font-bold uppercase text-[#5B8780]">
-                  <th class="py-3 px-4">Waktu</th>
+                  <th class="py-3 px-4">Tanggal / Jam</th>
+                  <th class="py-3 px-4">Pemilik</th>
                   <th class="py-3 px-4">Kategori & Catatan</th>
                   <th class="py-3 px-4 text-right">Nominal</th>
                   <th class="py-3 px-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="kas-table-body" class="divide-y divide-white/60">
-                <tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>
+                <tr><td colspan="5" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>
               </tbody>
             </table>
           </div>
@@ -342,6 +490,40 @@
   </div>
 
   <!-- ============================================================== -->
+  <!-- MODAL: KELOLA BANYAK PEMILIK (DYNAMIC OWNERS MANAGER)          -->
+  <!-- ============================================================== -->
+  <div id="modal-manage-owners" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/70 pb-3">
+        <h3 class="text-sm font-extrabold text-[#1E3631] flex items-center gap-2">
+          <i class="fa-solid fa-users text-[#5B8780]"></i> Kelola Nama Pemilik
+        </h3>
+        <button onclick="toggleModal('modal-manage-owners', false)" class="text-[#5B8780] hover:text-rose-600 font-bold">✕</button>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Tambah Pemilik Baru</label>
+        <div class="flex gap-2">
+          <input type="text" id="new_owner_input" placeholder="Misal: Ibu, Tim, Adik" class="flex-1 px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
+          <button onclick="addNewOwner()" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-extrabold shadow transition active:scale-95">
+            + Tambah
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 pt-2">
+        <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Daftar Pemilik Saat Ini</label>
+        <div id="owners-manage-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+        </div>
+      </div>
+
+      <button onclick="toggleModal('modal-manage-owners', false)" class="w-full py-2.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold shadow-sm transition">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
   <!-- MODAL: WHATSAPP INVOICE GENERATOR                              -->
   <!-- ============================================================== -->
   <div id="wa-invoice-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -357,14 +539,12 @@
         <button onclick="toggleWaModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
       </div>
 
-      <!-- Pilih Order Jastip -->
       <div>
         <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pesanan Customer</label>
-        <select id="wa_select_order" onchange="renderWaPreview()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
+        <select id="wa_select_order" onchange="renderWaPreview()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
         </select>
       </div>
 
-      <!-- Rekening ShopeePay (Default Otomatis) -->
       <div class="p-3.5 bg-white/60 rounded-2xl border border-white space-y-2.5">
         <span class="text-[10px] font-extrabold text-[#5B8780] uppercase tracking-wider block">Rekening Tujuan Pembayaran</span>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -383,13 +563,11 @@
         </div>
       </div>
 
-      <!-- Preview Teks Invoice -->
       <div>
         <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Preview Pesan WhatsApp</label>
-        <textarea id="wa_text_preview" rows="8" class="w-full p-3 bg-white/90 border border-white rounded-2xl text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5B8780] leading-relaxed select-all"></textarea>
+        <textarea id="wa_text_preview" rows="8" class="w-full p-3 bg-white/90 border border-white rounded-2xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-[#5B8780] leading-relaxed select-all"></textarea>
       </div>
 
-      <!-- Tombol Aksi -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
         <button onclick="copyWaInvoice()" type="button" class="py-2.5 bg-[#FAF5EB] hover:bg-white text-[#1E3631] border border-[#5B8780]/30 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
           <i class="fa-regular fa-copy"></i> 1-Click Salin Teks
@@ -497,9 +675,56 @@
     let barChart, donutChart;
     let currentJastipFilter = 'semua';
 
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', { 
+    // Daftar Pemilik Dinamis
+    let ownersList = JSON.parse(localStorage.getItem('fm_owners_list')) || ['Ilham', 'Ayang'];
+
+    const OWNER_COLORS = ['#0284c7', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#14b8a6', '#6366f1'];
+    const OWNER_EMOJIS = ['👨', '👩', '👤', '⭐', '✨', '💼', '🏡', '🎯'];
+
+    // Filter Aktif Kas
+    let currentTimeFilter = 'bulan_ini'; 
+    let currentOwnerFilter = 'semua';    
+
+    // Set Default Input Tanggal ke Hari Ini
+    const todayISO = new Date().toISOString().split('T')[0];
+    document.getElementById('kas_date').value = todayISO;
+
+    const formattedDate = new Date().toLocaleDateString('id-ID', { 
       day: 'numeric', month: 'short', year: 'numeric' 
     });
+    document.getElementById('current-date').innerText = formattedDate;
+    document.getElementById('splash-date').innerText = formattedDate;
+
+    // ==============================================================
+    // [EFEK PEMBUKA: BUKA & KEMBALI KE DASBOR PEMBUKAAN]
+    // ==============================================================
+    function unlockDashboard() {
+      const splash = document.getElementById('splash-screen');
+      if (!splash || splash.classList.contains('slide-up')) return;
+
+      splash.classList.add('slide-up');
+
+      setTimeout(() => {
+        splash.style.display = 'none';
+        if (barChart) barChart.resize();
+        if (donutChart) donutChart.resize();
+      }, 760);
+    }
+
+    // FUNGSI BARU: KLIK IKON/LOGO FLOWMASTER UNTUK KEMBALI KE LAYAR UTAMA
+    function returnToSplash() {
+      const splash = document.getElementById('splash-screen');
+      if (!splash) return;
+
+      // Munculkan kembali splash screen
+      splash.style.display = 'flex';
+      
+      // Paksa render agar transisi slide-down terbaca mulus
+      void splash.offsetHeight;
+
+      // Hapus class slide-up agar layar meluncur kembali ke bawah
+      splash.classList.remove('slide-up');
+    }
 
     function formatRupiah(num) {
       return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
@@ -514,6 +739,174 @@
       });
     }
     bindCurrencyInputs();
+
+    function toggleModal(id, show) {
+      document.getElementById(id).classList.toggle('hidden', !show);
+    }
+
+    // ==============================================================
+    // KELOLA BANYAK PEMILIK (DYNAMIC OWNERS)
+    // ==============================================================
+    function openManageOwnersModal() {
+      renderOwnersManageList();
+      toggleModal('modal-manage-owners', true);
+    }
+
+    function addNewOwner() {
+      const input = document.getElementById('new_owner_input');
+      const name = input.value.trim();
+      if (!name) return alert("Masukkan nama pemilik!");
+      if (ownersList.some(o => o.toLowerCase() === name.toLowerCase())) {
+        return alert("Nama pemilik sudah ada!");
+      }
+
+      ownersList.push(name);
+      saveOwnersList();
+      input.value = '';
+      renderOwnersManageList();
+      applyDynamicOwnersUI();
+      updateKasDashboard();
+      alert(`✅ Berhasil menambahkan pemilik: ${name}`);
+    }
+
+    function removeOwner(name) {
+      if (ownersList.length <= 1) {
+        return alert("Minimal harus ada 1 pemilik!");
+      }
+      if (confirm(`Hapus "${name}" dari daftar pemilik? (Catatan kas yang sudah ada tidak akan hilang)`)) {
+        ownersList = ownersList.filter(o => o !== name);
+        saveOwnersList();
+        renderOwnersManageList();
+        applyDynamicOwnersUI();
+        updateKasDashboard();
+      }
+    }
+
+    function saveOwnersList() {
+      localStorage.setItem('fm_owners_list', JSON.stringify(ownersList));
+    }
+
+    function renderOwnersManageList() {
+      const listEl = document.getElementById('owners-manage-list');
+      listEl.innerHTML = ownersList.map((name, i) => `
+        <div class="flex items-center justify-between p-2 bg-white/70 rounded-xl border border-white text-xs font-bold text-[#1E3631]">
+          <span class="flex items-center gap-1.5">
+            <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]}</span>
+            <span>${name}</span>
+          </span>
+          <button onclick="removeOwner('${name}')" class="text-[#5B8780] hover:text-rose-600 transition p-1">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function applyDynamicOwnersUI() {
+      // 1. Splash Screen Badges
+      const splashContainer = document.getElementById('splash-owners-container');
+      splashContainer.innerHTML = ownersList.map((name, i) => `
+        <span class="px-2 py-0.5 rounded-full bg-white/10 text-[11px]">
+          ${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}
+        </span>
+      `).join('');
+
+      // 2. Select Filter Pemilik
+      const selectFilter = document.getElementById('select-owner-filter');
+      selectFilter.innerHTML = `
+        <option value="semua">Semua Pemilik</option>
+        ${ownersList.map((name, i) => `<option value="${name}">${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</option>`).join('')}
+      `;
+      selectFilter.value = currentOwnerFilter;
+
+      // 3. Form Input Radio Pemilik
+      const formRadios = document.getElementById('form-owner-radios');
+      formRadios.innerHTML = ownersList.map((name, i) => `
+        <label class="cursor-pointer">
+          <input type="radio" name="kas_owner" value="${name}" class="peer sr-only" ${i === 0 ? 'checked' : ''}>
+          <div class="text-center py-2 px-1.5 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#5B8780] peer-checked:text-white transition flex items-center justify-center gap-1 truncate">
+            <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]}</span>
+            <span class="truncate">${name.toUpperCase()}</span>
+          </div>
+        </label>
+      `).join('');
+
+      // 4. Update Bar Chart
+      if (barChart) {
+        barChart.data.labels = ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`);
+        barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
+        barChart.update();
+      }
+
+      updateFilterSummaryBadge();
+    }
+
+    // ==============================================================
+    // FILTER MINIMALIS (MODE SEMBUNYI / COLLAPSIBLE)
+    // ==============================================================
+    function toggleFilterDrawer() {
+      const panel = document.getElementById('filter-drawer-panel');
+      const chevron = document.getElementById('filter-chevron');
+      const isHidden = panel.classList.contains('hidden');
+
+      panel.classList.toggle('hidden', !isHidden);
+      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    function onSelectTimeChange(val) {
+      currentTimeFilter = val;
+      const labelMap = {
+        'hari_ini': 'Hari Ini',
+        'minggu_ini': 'Minggu Ini',
+        'bulan_ini': 'Bulan Ini',
+        'semua': 'Semua Waktu'
+      };
+      document.getElementById('badge-period-income').innerText = labelMap[val];
+      document.getElementById('badge-period-expense').innerText = labelMap[val];
+      updateFilterSummaryBadge();
+      updateKasDashboard();
+    }
+
+    function onSelectOwnerChange(val) {
+      currentOwnerFilter = val;
+      updateFilterSummaryBadge();
+      updateKasDashboard();
+    }
+
+    function updateFilterSummaryBadge() {
+      const timeMap = {
+        'hari_ini': 'Hari Ini',
+        'minggu_ini': 'Minggu Ini',
+        'bulan_ini': 'Bulan Ini',
+        'semua': 'Semua Periode'
+      };
+
+      let ownerText = currentOwnerFilter === 'semua' ? 'Semua Pemilik' : currentOwnerFilter;
+      document.getElementById('badge-filter-summary').innerText = `📅 ${timeMap[currentTimeFilter]} • 👤 ${ownerText}`;
+    }
+
+    function isDateInPeriod(dateStr, period) {
+      if (period === 'semua') return true;
+      if (!dateStr) return true;
+
+      const date = new Date(dateStr);
+      const now = new Date();
+
+      if (period === 'hari_ini') {
+        return date.toISOString().split('T')[0] === now.toISOString().split('T')[0];
+      }
+
+      if (period === 'minggu_ini') {
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7;
+      }
+
+      if (period === 'bulan_ini') {
+        return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+      }
+
+      return true;
+    }
 
     // ==============================================================
     // [KONEKSI OTOMATIS SPS - GOOGLE SPREADSHEET]
@@ -540,10 +933,35 @@
         const resp = await fetch(`${SPS_API_URL}?action=getData`);
         const json = await resp.json();
         if (json.status === 'success') {
-          if (json.kas) kasTransactions = json.kas;
+          if (json.kas) {
+            kasTransactions = json.kas.map(t => {
+              let owner = t.owner;
+              let desc = t.desc || '';
+              
+              const tagMatch = desc.match(/^\[(.*?)\]/);
+              if (tagMatch) {
+                owner = tagMatch[1];
+                desc = desc.replace(/^\[.*?\]\s*/, '').trim();
+              }
+              if (!owner) owner = ownersList[0] || 'Umum';
+
+              if (!ownersList.includes(owner)) {
+                ownersList.push(owner);
+                saveOwnersList();
+              }
+
+              return {
+                ...t,
+                desc,
+                owner,
+                date: t.date || (t.time && t.time.includes('-') ? t.time.split(' ')[0] : todayISO)
+              };
+            });
+          }
           if (json.jastip) jastipOrders = json.jastip;
 
           saveLocalBackup();
+          applyDynamicOwnersUI();
           updateKasDashboard();
           updateJastipModule();
           updateSpsStatusUI('online', 'SPS Terhubung');
@@ -586,118 +1004,196 @@
     }
 
     // ==============================================================
-    // [SHOPEEPAY MUHAMAD ILHAM JAYA KUSUMA]
+    // KAS HARIAN & DASHBOARD LOGIC
     // ==============================================================
-    function loadBankSettings() {
-      const defaultBank = 'ShopeePay';
-      const defaultAcc = '0895333536524';
-      const defaultHolder = 'MUHAMAD ILHAM JAYA KUSUMA';
+    function switchMainTab(tab) {
+      const mKas = document.getElementById('module-kas');
+      const mJastip = document.getElementById('module-jastip');
+      const bKas = document.getElementById('nav-tab-kas');
+      const bJastip = document.getElementById('nav-tab-jastip');
 
-      document.getElementById('wa_bank_name').value = localStorage.getItem('fm_bank_name') || defaultBank;
-      document.getElementById('wa_bank_acc').value = localStorage.getItem('fm_bank_acc') || defaultAcc;
-      document.getElementById('wa_bank_holder').value = localStorage.getItem('fm_bank_holder') || defaultHolder;
+      if (tab === 'tab-kas') {
+        mKas.classList.remove('hidden');
+        mJastip.classList.add('hidden');
+        bKas.classList.add('active');
+        bJastip.classList.remove('active');
+        if(barChart) barChart.resize();
+        if(donutChart) donutChart.resize();
+      } else {
+        mKas.classList.add('hidden');
+        mJastip.classList.remove('hidden');
+        bKas.classList.remove('active');
+        bJastip.classList.add('active');
+      }
     }
 
-    function saveBankSettings() {
-      localStorage.setItem('fm_bank_name', document.getElementById('wa_bank_name').value);
-      localStorage.setItem('fm_bank_acc', document.getElementById('wa_bank_acc').value);
-      localStorage.setItem('fm_bank_holder', document.getElementById('wa_bank_holder').value);
+    function switchKasView(view) {
+      ['kas-dash', 'kas-form', 'kas-log'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        document.getElementById(`sub-${v}`).classList.remove('active');
+      });
+      document.getElementById(`view-${view}`).classList.remove('hidden');
+      document.getElementById(`sub-${view}`).classList.add('active');
+      if (view === 'kas-dash') {
+        if(barChart) barChart.resize();
+        if(donutChart) donutChart.resize();
+      }
     }
 
-    function toggleWaModal(show) {
-      document.getElementById('wa-invoice-modal').classList.toggle('hidden', !show);
+    document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const ownerInput = document.querySelector('input[name="kas_owner"]:checked');
+      const owner = ownerInput ? ownerInput.value : (ownersList[0] || 'Umum');
+      const type = document.querySelector('input[name="kas_type"]:checked').value;
+      const date = document.getElementById('kas_date').value || todayISO;
+      const amount = parseFloat(document.getElementById('kas_amount').value.replace(/\./g, '')) || 0;
+      const category = document.getElementById('kas_category').value;
+      const desc = document.getElementById('kas_desc').value.trim() || category;
+      const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+      if (amount <= 0) return alert("Nominal harus lebih dari 0!");
+
+      const newEntry = { 
+        id: Date.now(), 
+        date, 
+        time: `${date} ${time}`, 
+        type, 
+        amount, 
+        category, 
+        desc, 
+        owner 
+      };
+
+      kasTransactions.unshift(newEntry);
+      
+      saveLocalBackup();
+      updateKasDashboard();
+      this.reset();
+      document.getElementById('kas_date').value = todayISO;
+      document.getElementById('kas_amount').value = '';
+
+      // Kirim otomatis ke Google Spreadsheet SPS
+      syncToSps('addKas', {
+        ...newEntry,
+        desc: `[${owner}] ${desc}`
+      });
+
+      alert(`✅ Transaksi milik ${owner} berhasil disimpan!`);
+      switchKasView('kas-dash');
+    });
+
+    async function deleteKas(id) {
+      if(confirm("Hapus catatan transaksi kas ini?")) {
+        kasTransactions = kasTransactions.filter(k => k.id !== id);
+        saveLocalBackup();
+        updateKasDashboard();
+        syncToSps('deleteKas', { id });
+      }
     }
 
-    function openWaInvoiceModal(selectedId = null) {
-      if (jastipOrders.length === 0) {
-        alert("Belum ada data order jastip untuk dibuatkan invoice!");
+    function updateKasDashboard() {
+      const filtered = kasTransactions.filter(t => {
+        const matchPeriod = isDateInPeriod(t.date, currentTimeFilter);
+        const matchOwner = currentOwnerFilter === 'semua' || t.owner === currentOwnerFilter;
+        return matchPeriod && matchOwner;
+      });
+
+      let inc = 0, exp = 0, catMap = {};
+      let ownerExpMap = {};
+      ownersList.forEach(o => ownerExpMap[o] = 0);
+
+      filtered.forEach(t => {
+        if (t.type === 'pemasukan') {
+          inc += t.amount;
+        } else {
+          exp += t.amount;
+          catMap[t.category] = (catMap[t.category] || 0) + t.amount;
+
+          if (ownerExpMap[t.owner] !== undefined) {
+            ownerExpMap[t.owner] += t.amount;
+          } else {
+            ownerExpMap[t.owner] = t.amount;
+          }
+        }
+      });
+
+      const bal = inc - exp;
+      let totalAllOwnerExp = Object.values(ownerExpMap).reduce((a, b) => a + b, 0);
+
+      // Update KPI Utama
+      document.getElementById('kpi-income').innerText = formatRupiah(inc);
+      document.getElementById('kpi-expense').innerText = formatRupiah(exp);
+      document.getElementById('kpi-balance').innerText = formatRupiah(bal);
+      document.getElementById('kas-count').innerText = `${filtered.length} Data (${kasTransactions.length} Total)`;
+
+      // Render Kartu Dinamis Pemilik
+      const cardsContainer = document.getElementById('dynamic-owner-cards-container');
+      cardsContainer.innerHTML = ownersList.map((name, i) => {
+        const userExp = ownerExpMap[name] || 0;
+        const pct = totalAllOwnerExp > 0 ? Math.round((userExp / totalAllOwnerExp) * 100) : 0;
+        const color = OWNER_COLORS[i % OWNER_COLORS.length];
+        const emoji = OWNER_EMOJIS[i % OWNER_EMOJIS.length];
+
+        return `
+          <div class="banner-glass-card rounded-2xl p-3.5 md:p-4 border-l-4 shadow-sm" style="border-left-color: ${color}">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-[#1E3631] uppercase tracking-wider flex items-center gap-1 truncate">
+                <span>${emoji}</span> <span class="truncate">${name}</span>
+              </span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/60 text-[#1E3631]">${pct}%</span>
+            </div>
+            <h3 class="text-base md:text-lg font-extrabold text-[#1E3631] mt-1">${formatRupiah(userExp)}</h3>
+          </div>
+        `;
+      }).join('');
+
+      // Update Bar Chart
+      barChart.data.labels = ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`);
+      barChart.data.datasets[0].data = ownersList.map(name => ownerExpMap[name] || 0);
+      barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
+      barChart.update();
+
+      // Update Donut Chart
+      const cLabels = Object.keys(catMap);
+      donutChart.data.labels = cLabels;
+      donutChart.data.datasets[0].data = Object.values(catMap);
+      document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
+      donutChart.update();
+
+      // Render Tabel Log
+      const tbody = document.getElementById('kas-table-body');
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-xs text-[#5B8780]">Tidak ada transaksi untuk filter ini.</td></tr>`;
         return;
       }
 
-      loadBankSettings();
+      tbody.innerHTML = filtered.map(t => {
+        const ownerIndex = ownersList.indexOf(t.owner);
+        const emoji = ownerIndex >= 0 ? OWNER_EMOJIS[ownerIndex % OWNER_EMOJIS.length] : '👤';
 
-      const select = document.getElementById('wa_select_order');
-      select.innerHTML = jastipOrders.map(o => `
-        <option value="${o.id}" ${selectedId === o.id ? 'selected' : ''}>
-          ${o.custName} - ${o.itemName} (${o.payStatus.toUpperCase()})
-        </option>
-      `).join('');
-
-      renderWaPreview();
-      toggleWaModal(true);
-    }
-
-    function renderWaPreview() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
-      const order = jastipOrders.find(o => o.id === selectedId);
-      if (!order) return;
-
-      const bank = document.getElementById('wa_bank_name').value || 'ShopeePay';
-      const rek = document.getElementById('wa_bank_acc').value || '0895333536524';
-      const holder = document.getElementById('wa_bank_holder').value || 'MUHAMAD ILHAM JAYA KUSUMA';
-
-      let statusDesc = '';
-      if (order.payStatus === 'lunas') {
-        statusDesc = '✅ *LUNAS (100%)*';
-      } else if (order.payStatus === 'dp') {
-        statusDesc = `⚠️ *DP Diterima: ${formatRupiah(order.dpAmount)}*`;
-      } else {
-        statusDesc = '❌ *Belum Ada Pembayaran*';
-      }
-
-      const invoiceText = 
-`Halo Kak *${order.custName}*! ✨
-Terima kasih sudah order jastip. Berikut rincian invoice pesanan kamu:
-
-🛍️ *Detail Pesanan:*
-• Barang: *${order.itemName}*
-• Toko/Store: ${order.storeName}
-• Status Logistik: ${order.logistics}
-
-💵 *Rincian Biaya:*
-• Harga Beli Barang: ${formatRupiah(order.modal)}
-• Fee Jastip: ${formatRupiah(order.fee)}
-• Ongkir/Packing: ${formatRupiah(order.ongkir)}
-──────────────────────
-• *TOTAL TAGIHAN: ${formatRupiah(order.totalTagihan)}*
-• Status Bayar: ${statusDesc}
-• *SISA PELUNASAN: ${formatRupiah(order.sisaPiutang)}*
-
-🏦 *Pembayaran Transfer Melalui:*
-• E-Wallet / Bank: *${bank}*
-• Nomor Shopee: *${rek}*
-• Atas Nama: *${holder}*
-
-Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak. Terima kasih banyak! 🙏💖`;
-
-      document.getElementById('wa_text_preview').value = invoiceText;
-    }
-
-    function copyWaInvoice() {
-      const textarea = document.getElementById('wa_text_preview');
-      textarea.select();
-      navigator.clipboard.writeText(textarea.value).then(() => {
-        alert("✅ Teks Invoice WhatsApp berhasil disalin ke clipboard!");
-      }).catch(() => {
-        document.execCommand('copy');
-        alert("✅ Teks Invoice disalin!");
-      });
-    }
-
-    function sendWaDirect() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
-      const order = jastipOrders.find(o => o.id === selectedId);
-      const text = encodeURIComponent(document.getElementById('wa_text_preview').value);
-
-      let phone = (order ? order.custContact : '').replace(/\D/g, '');
-      if (phone.startsWith('0')) {
-        phone = '62' + phone.slice(1);
-      } else if (phone && !phone.startsWith('62')) {
-        phone = '62' + phone;
-      }
-
-      const waUrl = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
-      window.open(waUrl, '_blank');
+        return `
+          <tr class="hover:bg-white/40">
+            <td class="py-3 px-4 text-[#5B8780] font-semibold text-xs">
+              ${t.date || '-'}<br><span class="text-[10px] text-gray-500">${t.time || ''}</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/70 text-[#1E3631] border border-white">
+                <span>${emoji}</span> <span>${(t.owner || 'Umum').toUpperCase()}</span>
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${t.type === 'pemasukan' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${t.category}</span>
+              <p class="font-bold text-[#1E3631] mt-0.5">${t.desc}</p>
+            </td>
+            <td class="py-3 px-4 text-right font-extrabold ${t.type === 'pemasukan' ? 'text-[#237059]' : 'text-[#C04848]'}">
+              ${t.type === 'pemasukan' ? '+' : '-'} ${formatRupiah(t.amount)}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="deleteKas(${t.id})" class="text-[#5B8780]/60 hover:text-rose-600 transition"><i class="fa-regular fa-trash-can"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     // ==============================================================
@@ -781,126 +1277,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
     }
 
     // ==============================================================
-    // KAS HARIAN LOGIC
-    // ==============================================================
-    function switchMainTab(tab) {
-      const mKas = document.getElementById('module-kas');
-      const mJastip = document.getElementById('module-jastip');
-      const bKas = document.getElementById('nav-tab-kas');
-      const bJastip = document.getElementById('nav-tab-jastip');
-
-      if (tab === 'tab-kas') {
-        mKas.classList.remove('hidden');
-        mJastip.classList.add('hidden');
-        bKas.classList.add('active');
-        bJastip.classList.remove('active');
-        if(barChart) barChart.resize();
-        if(donutChart) donutChart.resize();
-      } else {
-        mKas.classList.add('hidden');
-        mJastip.classList.remove('hidden');
-        bKas.classList.remove('active');
-        bJastip.classList.add('active');
-      }
-    }
-
-    function switchKasView(view) {
-      ['kas-dash', 'kas-form', 'kas-log'].forEach(v => {
-        document.getElementById(`view-${v}`).classList.add('hidden');
-        document.getElementById(`sub-${v}`).classList.remove('active');
-      });
-      document.getElementById(`view-${view}`).classList.remove('hidden');
-      document.getElementById(`sub-${view}`).classList.add('active');
-      if (view === 'kas-dash') {
-        if(barChart) barChart.resize();
-        if(donutChart) donutChart.resize();
-      }
-    }
-
-    document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const type = document.querySelector('input[name="kas_type"]:checked').value;
-      const amount = parseFloat(document.getElementById('kas_amount').value.replace(/\./g, '')) || 0;
-      const category = document.getElementById('kas_category').value;
-      const desc = document.getElementById('kas_desc').value.trim() || category;
-      const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-      if (amount <= 0) return alert("Nominal harus lebih dari 0!");
-
-      const newEntry = { id: Date.now(), time, type, amount, category, desc };
-      kasTransactions.unshift(newEntry);
-      
-      saveLocalBackup();
-      updateKasDashboard();
-      this.reset();
-      document.getElementById('kas_amount').value = '';
-
-      // Kirim otomatis ke Google Spreadsheet SPS
-      syncToSps('addKas', newEntry);
-
-      alert("✅ Kas berhasil disimpan & masuk ke Google Spreadsheet!");
-      switchKasView('kas-dash');
-    });
-
-    async function deleteKas(id) {
-      if(confirm("Hapus catatan kas ini?")) {
-        kasTransactions = kasTransactions.filter(k => k.id !== id);
-        saveLocalBackup();
-        updateKasDashboard();
-        
-        // Hapus otomatis di Google Spreadsheet SPS
-        syncToSps('deleteKas', { id });
-      }
-    }
-
-    function updateKasDashboard() {
-      let inc = 0, exp = 0, catMap = {};
-      kasTransactions.forEach(t => {
-        if(t.type === 'pemasukan') inc += t.amount;
-        else {
-          exp += t.amount;
-          catMap[t.category] = (catMap[t.category] || 0) + t.amount;
-        }
-      });
-      const bal = inc - exp;
-
-      document.getElementById('kpi-income').innerText = formatRupiah(inc);
-      document.getElementById('kpi-expense').innerText = formatRupiah(exp);
-      document.getElementById('kpi-balance').innerText = formatRupiah(bal);
-      document.getElementById('kas-count').innerText = `${kasTransactions.length} Data`;
-
-      barChart.data.datasets[0].data = [inc, exp];
-      barChart.update();
-
-      const cLabels = Object.keys(catMap);
-      donutChart.data.labels = cLabels;
-      donutChart.data.datasets[0].data = Object.values(catMap);
-      document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
-      donutChart.update();
-
-      const tbody = document.getElementById('kas-table-body');
-      if(!kasTransactions.length) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = kasTransactions.map(t => `
-        <tr class="hover:bg-white/40">
-          <td class="py-3 px-4 text-[#5B8780] font-semibold">${t.time}</td>
-          <td class="py-3 px-4">
-            <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${t.type==='pemasukan'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800'}">${t.category}</span>
-            <p class="font-bold text-[#1E3631] mt-0.5">${t.desc}</p>
-          </td>
-          <td class="py-3 px-4 text-right font-extrabold ${t.type==='pemasukan'?'text-[#237059]':'text-[#C04848]'}">
-            ${t.type==='pemasukan'?'+':'-'} ${formatRupiah(t.amount)}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="deleteKas(${t.id})" class="text-[#5B8780]/60 hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // ==============================================================
     // OPERASIONAL JASTIP LOGIC
     // ==============================================================
     function toggleJastipModal(show) {
@@ -958,7 +1334,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       // Kirim otomatis ke Google Spreadsheet SPS
       syncToSps('addJastip', newOrder);
 
-      alert("✅ Order Jastip berhasil disimpan & masuk ke Google Spreadsheet!");
+      alert("✅ Order Jastip berhasil disimpan!");
     });
 
     async function toggleLunasOrder(id) {
@@ -974,7 +1350,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         saveLocalBackup();
         updateJastipModule();
 
-        // Update otomatis ke Google Spreadsheet SPS
         syncToSps('updateJastip', { id: order.id, payStatus: order.payStatus, sisaPiutang: order.sisaPiutang });
       }
     }
@@ -984,8 +1359,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         jastipOrders = jastipOrders.filter(o => o.id !== id);
         saveLocalBackup();
         updateJastipModule();
-
-        // Hapus otomatis di Google Spreadsheet SPS
         syncToSps('deleteJastip', { id });
       }
     }
@@ -1065,14 +1438,131 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       `).join('');
     }
 
-    // Inisialisasi Aplikasi Otomatis
+    // ==============================================================
+    // SHOPEEPAY & WA INVOICE
+    // ==============================================================
+    function loadBankSettings() {
+      const defaultBank = 'ShopeePay';
+      const defaultAcc = '0895333536524';
+      const defaultHolder = 'MUHAMAD ILHAM JAYA KUSUMA';
+
+      document.getElementById('wa_bank_name').value = localStorage.getItem('fm_bank_name') || defaultBank;
+      document.getElementById('wa_bank_acc').value = localStorage.getItem('fm_bank_acc') || defaultAcc;
+      document.getElementById('wa_bank_holder').value = localStorage.getItem('fm_bank_holder') || defaultHolder;
+    }
+
+    function saveBankSettings() {
+      localStorage.setItem('fm_bank_name', document.getElementById('wa_bank_name').value);
+      localStorage.setItem('fm_bank_acc', document.getElementById('wa_bank_acc').value);
+      localStorage.setItem('fm_bank_holder', document.getElementById('wa_bank_holder').value);
+    }
+
+    function toggleWaModal(show) {
+      document.getElementById('wa-invoice-modal').classList.toggle('hidden', !show);
+    }
+
+    function openWaInvoiceModal(selectedId = null) {
+      if (jastipOrders.length === 0) {
+        alert("Belum ada data order jastip untuk dibuatkan invoice!");
+        return;
+      }
+      loadBankSettings();
+      const select = document.getElementById('wa_select_order');
+      select.innerHTML = jastipOrders.map(o => `
+        <option value="${o.id}" ${selectedId === o.id ? 'selected' : ''}>
+          ${o.custName} - ${o.itemName} (${o.payStatus.toUpperCase()})
+        </option>
+      `).join('');
+      renderWaPreview();
+      toggleWaModal(true);
+    }
+
+    function renderWaPreview() {
+      const selectedId = Number(document.getElementById('wa_select_order').value);
+      const order = jastipOrders.find(o => o.id === selectedId);
+      if (!order) return;
+
+      const bank = document.getElementById('wa_bank_name').value || 'ShopeePay';
+      const rek = document.getElementById('wa_bank_acc').value || '0895333536524';
+      const holder = document.getElementById('wa_bank_holder').value || 'MUHAMAD ILHAM JAYA KUSUMA';
+
+      let statusDesc = '';
+      if (order.payStatus === 'lunas') {
+        statusDesc = '✅ *LUNAS (100%)*';
+      } else if (order.payStatus === 'dp') {
+        statusDesc = `⚠️ *DP Diterima: ${formatRupiah(order.dpAmount)}*`;
+      } else {
+        statusDesc = '❌ *Belum Ada Pembayaran*';
+      }
+
+      const invoiceText = 
+`Halo Kak *${order.custName}*! ✨
+Terima kasih sudah order jastip. Berikut rincian invoice pesanan kamu:
+
+🛍️ *Detail Pesanan:*
+• Barang: *${order.itemName}*
+• Toko/Store: ${order.storeName}
+• Status Logistik: ${order.logistics}
+
+💵 *Rincian Biaya:*
+• Harga Beli Barang: ${formatRupiah(order.modal)}
+• Fee Jastip: ${formatRupiah(order.fee)}
+• Ongkir/Packing: ${formatRupiah(order.ongkir)}
+──────────────────────
+• *TOTAL TAGIHAN: ${formatRupiah(order.totalTagihan)}*
+• Status Bayar: ${statusDesc}
+• *SISA PELUNASAN: ${formatRupiah(order.sisaPiutang)}*
+
+🏦 *Pembayaran Transfer Melalui:*
+• E-Wallet / Bank: *${bank}*
+• Nomor Shopee: *${rek}*
+• Atas Nama: *${holder}*
+
+Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak. Terima kasih banyak! 🙏💖`;
+
+      document.getElementById('wa_text_preview').value = invoiceText;
+    }
+
+    function copyWaInvoice() {
+      const textarea = document.getElementById('wa_text_preview');
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        alert("✅ Teks Invoice WhatsApp berhasil disalin!");
+      }).catch(() => {
+        document.execCommand('copy');
+        alert("✅ Teks Invoice disalin!");
+      });
+    }
+
+    function sendWaDirect() {
+      const selectedId = Number(document.getElementById('wa_select_order').value);
+      const order = jastipOrders.find(o => o.id === selectedId);
+      const text = encodeURIComponent(document.getElementById('wa_text_preview').value);
+
+      let phone = (order ? order.custContact : '').replace(/\D/g, '');
+      if (phone.startsWith('0')) {
+        phone = '62' + phone.slice(1);
+      } else if (phone && !phone.startsWith('62')) {
+        phone = '62' + phone;
+      }
+
+      const waUrl = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
+      window.open(waUrl, '_blank');
+    }
+
+    // Inisialisasi Aplikasi
     window.onload = () => {
       const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
       barChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
-          labels: ['Masuk', 'Keluar'],
-          datasets: [{ data: [0, 0], backgroundColor: ['#237059', '#C04848'], borderRadius: 8, barThickness: 34 }]
+          labels: ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`),
+          datasets: [{ 
+            data: ownersList.map(() => 0), 
+            backgroundColor: ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]), 
+            borderRadius: 8, 
+            barThickness: 32 
+          }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
@@ -1098,12 +1588,13 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         }
       });
 
+      applyDynamicOwnersUI();
       loadBankSettings();
       loadLocalBackup();
       updateKasDashboard();
       updateJastipModule();
 
-      // OTOMATIS AMBIL DATA TERBARU DARI SPREADSHEET SAAT DIBUKA
+      // Sinkronkan data cloud otomatis
       fetchFromSps();
     };
   </script>
