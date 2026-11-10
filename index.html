@@ -18,6 +18,10 @@
   <!-- Tesseract.js (AI Pemindai OCR Nota) -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
+  <!-- Firebase App & Firestore SDK Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
   <style>
     body { 
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -80,7 +84,7 @@
           </div>
           <div>
             <h1 class="text-base md:text-lg font-extrabold text-[#1E3631] tracking-tight leading-none">FlowMaster</h1>
-            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan & Modul Jastip</p>
+            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan & Modul Jastip (Cloud Sync)</p>
           </div>
         </div>
 
@@ -221,7 +225,7 @@
                 <input type="text" id="kas_desc" placeholder="Contoh: Beli bensin, Nota Indomaret" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
-              <button type="submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition">
+              <button type="submit" id="btn-save-kas" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
                 Simpan Catatan Kas
               </button>
             </form>
@@ -245,7 +249,7 @@
                 </tr>
               </thead>
               <tbody id="kas-table-body" class="divide-y divide-white/60">
-                <tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>
+                <tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Memuat data dari Cloud...</td></tr>
               </tbody>
             </table>
           </div>
@@ -318,7 +322,9 @@
                   <th class="py-3 px-3 text-center">Invoice WA / Aksi</th>
                 </tr>
               </thead>
-              <tbody id="jastip-table-body" class="divide-y divide-white/60 font-medium"></tbody>
+              <tbody id="jastip-table-body" class="divide-y divide-white/60 font-medium">
+                <tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Memuat data dari Cloud...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -343,14 +349,12 @@
         <button onclick="toggleWaModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
       </div>
 
-      <!-- Pilih Order Jastip -->
       <div>
         <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pesanan Customer</label>
         <select id="wa_select_order" onchange="renderWaPreview()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
         </select>
       </div>
 
-      <!-- Rekening ShopeePay (Default Otomatis) -->
       <div class="p-3.5 bg-white/60 rounded-2xl border border-white space-y-2.5">
         <span class="text-[10px] font-extrabold text-[#5B8780] uppercase tracking-wider block">Rekening Tujuan Pembayaran</span>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -369,13 +373,11 @@
         </div>
       </div>
 
-      <!-- Preview Teks Invoice -->
       <div>
         <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Preview Pesan WhatsApp</label>
         <textarea id="wa_text_preview" rows="8" class="w-full p-3 bg-white/90 border border-white rounded-2xl text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5B8780] leading-relaxed select-all"></textarea>
       </div>
 
-      <!-- Tombol Aksi -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
         <button onclick="copyWaInvoice()" type="button" class="py-2.5 bg-[#FAF5EB] hover:bg-white text-[#1E3631] border border-[#5B8780]/30 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
           <i class="fa-regular fa-copy"></i> 1-Click Salin Teks
@@ -466,15 +468,33 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition mt-2">
+        <button type="submit" id="btn-save-jastip" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition mt-2 flex items-center justify-center gap-2">
           Simpan Order Jastip
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- ================= JAVASCRIPT & FIREBASE LOGIC ================= -->
   <script>
+    // Konfigurasi Firebase Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2XBhOzMXWGFOGoe77IfThxB_GabPU4Vg",
+      authDomain: "ijk-80239.firebaseapp.com",
+      databaseURL: "https://ijk-80239-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ijk-80239",
+      storageBucket: "ijk-80239.firebasestorage.app",
+      messagingSenderId: "928307829733",
+      appId: "1:928307829733:web:d85536272938db38426d0c",
+      measurementId: "G-Y4X4EBBT45"
+    };
+
+    // Inisialisasi Firebase & Firestore
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
     let kasTransactions = [];
     let jastipOrders = [];
     let barChart, donutChart;
@@ -498,9 +518,7 @@
     }
     bindCurrencyInputs();
 
-    // ==============================================================
-    // [UPDATE] REKENING SHOPEEPAY MUHAMAD ILHAM JAYA KUSUMA
-    // ==============================================================
+    // Simpan & Ambil Pengaturan Rekening di LocalStorage
     function loadBankSettings() {
       const defaultBank = 'ShopeePay';
       const defaultAcc = '0895333536524';
@@ -541,7 +559,7 @@
     }
 
     function renderWaPreview() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
+      const selectedId = document.getElementById('wa_select_order').value;
       const order = jastipOrders.find(o => o.id === selectedId);
       if (!order) return;
 
@@ -598,7 +616,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
     }
 
     function sendWaDirect() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
+      const selectedId = document.getElementById('wa_select_order').value;
       const order = jastipOrders.find(o => o.id === selectedId);
       const text = encodeURIComponent(document.getElementById('wa_text_preview').value);
 
@@ -613,9 +631,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       window.open(waUrl, '_blank');
     }
 
-    // ==============================================================
     // OCR SCAN STRUK NOTA
-    // ==============================================================
     function triggerReceiptScan() {
       switchMainTab('tab-kas');
       switchKasView('kas-form');
@@ -693,9 +709,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       return 0;
     }
 
-    // ==============================================================
-    // KAS HARIAN LOGIC
-    // ==============================================================
+    // TAB NAVIGASI
     function switchMainTab(tab) {
       const mKas = document.getElementById('module-kas');
       const mJastip = document.getElementById('module-jastip');
@@ -730,8 +744,10 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       }
     }
 
-    document.getElementById('kas-transaction-form').addEventListener('submit', function(e) {
+    // FIREBASE: Simpan Kas ke Firestore
+    document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const btn = document.getElementById('btn-save-kas');
       const type = document.querySelector('input[name="kas_type"]:checked').value;
       const amount = parseFloat(document.getElementById('kas_amount').value.replace(/\./g, '')) || 0;
       const category = document.getElementById('kas_category').value;
@@ -740,18 +756,41 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
 
       if (amount <= 0) return alert("Nominal harus lebih dari 0!");
 
-      kasTransactions.unshift({ id: Date.now(), type, amount, category, desc, time });
-      updateKasDashboard();
-      this.reset();
-      document.getElementById('kas_amount').value = '';
-      alert("✅ Kas berhasil disimpan!");
-      switchKasView('kas-dash');
+      try {
+        btn.disabled = true;
+        btn.innerText = "Menyimpan ke Cloud...";
+
+        await db.collection("kas").add({
+          type,
+          amount,
+          category,
+          desc,
+          time,
+          createdAt: Date.now()
+        });
+
+        this.reset();
+        document.getElementById('kas_amount').value = '';
+        alert("✅ Catatan kas berhasil disimpan ke Cloud!");
+        switchKasView('kas-dash');
+      } catch (err) {
+        console.error("Gagal simpan kas: ", err);
+        alert("Terjadi kendala saat menyimpan ke database.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Simpan Catatan Kas";
+      }
     });
 
-    function deleteKas(id) {
+    // FIREBASE: Hapus Kas dari Firestore
+    async function deleteKas(id) {
       if(confirm("Hapus catatan kas ini?")) {
-        kasTransactions = kasTransactions.filter(k => k.id !== id);
-        updateKasDashboard();
+        try {
+          await db.collection("kas").doc(id).delete();
+        } catch (err) {
+          console.error(err);
+          alert("Gagal menghapus data.");
+        }
       }
     }
 
@@ -771,18 +810,22 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       document.getElementById('kpi-balance').innerText = formatRupiah(bal);
       document.getElementById('kas-count').innerText = `${kasTransactions.length} Data`;
 
-      barChart.data.datasets[0].data = [inc, exp];
-      barChart.update();
+      if (barChart) {
+        barChart.data.datasets[0].data = [inc, exp];
+        barChart.update();
+      }
 
       const cLabels = Object.keys(catMap);
-      donutChart.data.labels = cLabels;
-      donutChart.data.datasets[0].data = Object.values(catMap);
-      document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
-      donutChart.update();
+      if (donutChart) {
+        donutChart.data.labels = cLabels;
+        donutChart.data.datasets[0].data = Object.values(catMap);
+        document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
+        donutChart.update();
+      }
 
       const tbody = document.getElementById('kas-table-body');
       if(!kasTransactions.length) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas di Cloud.</td></tr>`;
         return;
       }
       tbody.innerHTML = kasTransactions.map(t => `
@@ -796,15 +839,13 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
             ${t.type==='pemasukan'?'+':'-'} ${formatRupiah(t.amount)}
           </td>
           <td class="py-3 px-4 text-center">
-            <button onclick="deleteKas(${t.id})" class="text-[#5B8780]/60 hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button>
+            <button onclick="deleteKas('${t.id}')" class="text-[#5B8780]/60 hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button>
           </td>
         </tr>
       `).join('');
     }
 
-    // ==============================================================
-    // OPERASIONAL JASTIP LOGIC
-    // ==============================================================
+    // MODUL JASTIP
     function toggleJastipModal(show) {
       document.getElementById('jastip-modal').classList.toggle('hidden', !show);
     }
@@ -823,8 +864,10 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       });
     });
 
-    document.getElementById('jastip-form').addEventListener('submit', function(e) {
+    // FIREBASE: Simpan Order Jastip ke Firestore
+    document.getElementById('jastip-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const btn = document.getElementById('btn-save-jastip');
       const custName = document.getElementById('j_cust_name').value.trim();
       const custContact = document.getElementById('j_cust_contact').value.trim() || '-';
       const itemName = document.getElementById('j_item_name').value.trim();
@@ -841,39 +884,63 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
 
       let sisaPiutang = (payStatus === 'belum') ? totalTagihan : (payStatus === 'dp' ? Math.max(0, totalTagihan - dpAmount) : 0);
 
-      jastipOrders.unshift({
-        id: Date.now(),
-        custName, custContact, itemName, storeName,
-        modal, fee, ongkir, totalTagihan,
-        payStatus, dpAmount, sisaPiutang, logistics
-      });
+      try {
+        btn.disabled = true;
+        btn.innerText = "Menyimpan ke Cloud...";
 
-      updateJastipModule();
-      this.reset();
-      document.getElementById('calc_display_total').innerText = 'Rp 0';
-      toggleDpField();
-      toggleJastipModal(false);
-      alert("✅ Order Jastip berhasil disimpan!");
+        await db.collection("jastip").add({
+          custName, custContact, itemName, storeName,
+          modal, fee, ongkir, totalTagihan,
+          payStatus, dpAmount, sisaPiutang, logistics,
+          createdAt: Date.now()
+        });
+
+        this.reset();
+        document.getElementById('calc_display_total').innerText = 'Rp 0';
+        toggleDpField();
+        toggleJastipModal(false);
+        alert("✅ Order Jastip berhasil disimpan ke Cloud!");
+      } catch (err) {
+        console.error("Gagal simpan jastip: ", err);
+        alert("Terjadi kendala saat menyimpan order.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Simpan Order Jastip";
+      }
     });
 
-    function toggleLunasOrder(id) {
+    // FIREBASE: Update Status Bayar Jastip di Firestore
+    async function toggleLunasOrder(id) {
       const order = jastipOrders.find(o => o.id === id);
-      if (order) {
+      if (!order) return;
+
+      try {
         if (order.payStatus === 'lunas') {
-          order.payStatus = 'belum';
-          order.sisaPiutang = order.totalTagihan;
+          await db.collection("jastip").doc(id).update({
+            payStatus: 'belum',
+            sisaPiutang: order.totalTagihan
+          });
         } else {
-          order.payStatus = 'lunas';
-          order.sisaPiutang = 0;
+          await db.collection("jastip").doc(id).update({
+            payStatus: 'lunas',
+            sisaPiutang: 0
+          });
         }
-        updateJastipModule();
+      } catch (err) {
+        console.error(err);
+        alert("Gagal memperbarui status order.");
       }
     }
 
-    function deleteJastip(id) {
+    // FIREBASE: Hapus Order Jastip dari Firestore
+    async function deleteJastip(id) {
       if(confirm("Hapus pesanan jastip ini?")) {
-        jastipOrders = jastipOrders.filter(o => o.id !== id);
-        updateJastipModule();
+        try {
+          await db.collection("jastip").doc(id).delete();
+        } catch (err) {
+          console.error(err);
+          alert("Gagal menghapus order.");
+        }
       }
     }
 
@@ -911,7 +978,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       else if (currentJastipFilter === 'selesai') filtered = jastipOrders.filter(o => o.logistics === 'Selesai');
 
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Tidak ada pesanan jastip.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Tidak ada pesanan jastip di Cloud.</td></tr>`;
         return;
       }
 
@@ -931,7 +998,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
           <td class="py-3 px-3 text-center">
             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${o.payStatus==='lunas'?'bg-emerald-100 text-emerald-800':(o.payStatus==='dp'?'bg-amber-100 text-amber-800':'bg-rose-100 text-rose-800')}">${o.payStatus.toUpperCase()}</span>
             ${o.sisaPiutang>0 ? `<br><span class="text-[9px] text-amber-700 font-bold">Sisa: ${formatRupiah(o.sisaPiutang)}</span>`:''}
-            <button onclick="toggleLunasOrder(${o.id})" class="block mx-auto mt-1 text-[9px] text-[#5B8780] hover:text-[#237059] underline font-bold">
+            <button onclick="toggleLunasOrder('${o.id}')" class="block mx-auto mt-1 text-[9px] text-[#5B8780] hover:text-[#237059] underline font-bold">
               ${o.payStatus==='lunas'?'Ke Belum':'Tandai Lunas'}
             </button>
           </td>
@@ -940,10 +1007,10 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
           </td>
           <td class="py-3 px-3 text-center">
             <div class="flex items-center justify-center gap-1.5">
-              <button onclick="openWaInvoiceModal(${o.id})" title="Kirim Invoice WhatsApp" class="w-7 h-7 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm transition">
+              <button onclick="openWaInvoiceModal('${o.id}')" title="Kirim Invoice WhatsApp" class="w-7 h-7 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm transition">
                 <i class="fa-brands fa-whatsapp text-xs"></i>
               </button>
-              <button onclick="deleteJastip(${o.id})" title="Hapus Order" class="w-7 h-7 rounded-lg bg-white/70 hover:bg-rose-100 text-[#5B8780] hover:text-rose-600 flex items-center justify-center transition">
+              <button onclick="deleteJastip('${o.id}')" title="Hapus Order" class="w-7 h-7 rounded-lg bg-white/70 hover:bg-rose-100 text-[#5B8780] hover:text-rose-600 flex items-center justify-center transition">
                 <i class="fa-regular fa-trash-can text-xs"></i>
               </button>
             </div>
@@ -952,7 +1019,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       `).join('');
     }
 
-    // Inisialisasi
+    // INISIALISASI & SINKRONISASI REAL-TIME CLOUD
     window.onload = () => {
       const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
       barChart = new Chart(ctxBar, {
@@ -986,8 +1053,22 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       });
 
       loadBankSettings();
-      updateKasDashboard();
-      updateJastipModule();
+
+      // Sinkronisasi Kas Real-Time dari Firestore
+      db.collection("kas").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        kasTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateKasDashboard();
+      }, err => {
+        console.error("Listener Kas Error: ", err);
+      });
+
+      // Sinkronisasi Jastip Real-Time dari Firestore
+      db.collection("jastip").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        jastipOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateJastipModule();
+      }, err => {
+        console.error("Listener Jastip Error: ", err);
+      });
     };
   </script>
 </body>
