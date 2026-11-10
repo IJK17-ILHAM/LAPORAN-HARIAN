@@ -84,7 +84,7 @@
           </div>
           <div>
             <h1 class="text-base md:text-lg font-extrabold text-[#1E3631] tracking-tight leading-none">FlowMaster</h1>
-            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan & Modul Jastip (Cloud Sync)</p>
+            <p class="text-[10px] md:text-[11px] text-[#5B8780] font-semibold mt-0.5">Keuangan & Modul Jastip (Cloud Real-Time)</p>
           </div>
         </div>
 
@@ -110,9 +110,7 @@
 
     <main class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex-1 w-full">
 
-      <!-- ============================================================== -->
-      <!-- [MODUL 1] KAS HARIAN                                           -->
-      <!-- ============================================================== -->
+      <!-- [MODUL 1] KAS HARIAN -->
       <section id="module-kas" class="space-y-4 md:space-y-6">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-white/60">
@@ -126,7 +124,7 @@
           </button>
         </div>
 
-        <!-- 1.1 Dashboard Kas -->
+        <!-- Dashboard Kas -->
         <div id="view-kas-dash" class="space-y-4 md:space-y-6">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-5">
             <div class="banner-glass-card rounded-2xl p-4 md:p-5">
@@ -160,7 +158,7 @@
           </div>
         </div>
 
-        <!-- 1.2 Form Kas -->
+        <!-- Form Kas -->
         <div id="view-kas-form" class="hidden max-w-lg mx-auto space-y-3">
           <div class="banner-glass-card rounded-2xl p-4 border border-dashed border-[#5B8780]/40 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
@@ -232,7 +230,7 @@
           </div>
         </div>
 
-        <!-- 1.3 Log Kas -->
+        <!-- Log Kas -->
         <div id="view-kas-log" class="hidden banner-glass-card rounded-2xl overflow-hidden">
           <div class="p-4 border-b border-white flex items-center justify-between">
             <h3 class="text-sm font-bold text-[#1E3631]">Aktivitas Kas</h3>
@@ -249,18 +247,15 @@
                 </tr>
               </thead>
               <tbody id="kas-table-body" class="divide-y divide-white/60">
-                <tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Memuat data dari Cloud...</td></tr>
+                <tr><td colspan="4" class="text-center py-6 text-xs text-[#5B8780]">Menghubungkan ke Cloud...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- [MODUL 2] KELOLA JASTIP                                        -->
-      <!-- ============================================================== -->
+      <!-- [MODUL 2] KELOLA JASTIP -->
       <section id="module-jastip" class="hidden space-y-4 md:space-y-6">
-        
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div>
             <h2 class="text-base md:text-xl font-extrabold text-[#1E3631]">Order Tracking Jasa Titip</h2>
@@ -276,7 +271,7 @@
           </div>
         </div>
 
-        <!-- 4 KPI Metrik Jastip -->
+        <!-- Metrik Jastip -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div class="banner-glass-card rounded-2xl p-4">
             <span class="text-[10px] font-bold uppercase text-[#5B8780]">Modal Talangan</span>
@@ -323,22 +318,18 @@
                 </tr>
               </thead>
               <tbody id="jastip-table-body" class="divide-y divide-white/60 font-medium">
-                <tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Memuat data dari Cloud...</td></tr>
+                <tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Menghubungkan ke Cloud...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
-
       </section>
     </main>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODAL: WHATSAPP INVOICE GENERATOR (DEFAULT SHOPEEPAY)          -->
-  <!-- ============================================================== -->
+  <!-- MODAL: WA INVOICE -->
   <div id="wa-invoice-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="banner-glass-card rounded-3xl p-5 md:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-white space-y-4">
-      
       <div class="flex items-center justify-between border-b border-white/70 pb-3">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm shadow">
@@ -363,7 +354,7 @@
             <input type="text" id="wa_bank_name" value="ShopeePay" oninput="saveBankSettings(); renderWaPreview();" class="w-full px-2.5 py-1.5 bg-white rounded-xl text-xs font-semibold text-[#1E3631] border border-white">
           </div>
           <div>
-            <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-0.5">Nomor Shopee</label>
+            <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-0.5">Nomor Rek/HP</label>
             <input type="text" id="wa_bank_acc" value="0895333536524" oninput="saveBankSettings(); renderWaPreview();" class="w-full px-2.5 py-1.5 bg-white rounded-xl text-xs font-bold text-[#1E3631] border border-white">
           </div>
           <div>
@@ -387,7 +378,6 @@
           <i class="fa-brands fa-whatsapp text-sm"></i> Buka WhatsApp Langsung
         </button>
       </div>
-
     </div>
   </div>
 
@@ -475,9 +465,9 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT & FIREBASE LOGIC ================= -->
+  <!-- JAVASCRIPT & LOGIKA DATABASE -->
   <script>
-    // Konfigurasi Firebase Anda
+    // Konfigurasi Firebase Proyek Anda
     const firebaseConfig = {
       apiKey: "AIzaSyC2XBhOzMXWGFOGoe77IfThxB_GabPU4Vg",
       authDomain: "ijk-80239.firebaseapp.com",
@@ -518,7 +508,6 @@
     }
     bindCurrencyInputs();
 
-    // Simpan & Ambil Pengaturan Rekening di LocalStorage
     function loadBankSettings() {
       const defaultBank = 'ShopeePay';
       const defaultAcc = '0895333536524';
@@ -631,7 +620,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       window.open(waUrl, '_blank');
     }
 
-    // OCR SCAN STRUK NOTA
     function triggerReceiptScan() {
       switchMainTab('tab-kas');
       switchKasView('kas-form');
@@ -709,7 +697,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       return 0;
     }
 
-    // TAB NAVIGASI
     function switchMainTab(tab) {
       const mKas = document.getElementById('module-kas');
       const mJastip = document.getElementById('module-jastip');
@@ -744,7 +731,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       }
     }
 
-    // FIREBASE: Simpan Kas ke Firestore
+    // SIMPAN DATA KAS KE CLOUD FIRESTORE
     document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-kas');
@@ -775,14 +762,14 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         switchKasView('kas-dash');
       } catch (err) {
         console.error("Gagal simpan kas: ", err);
-        alert("Terjadi kendala saat menyimpan ke database.");
+        alert("Gagal menyimpan ke database. Pastikan Firestore Rules sudah diizinkan (allow read, write: if true).");
       } finally {
         btn.disabled = false;
         btn.innerText = "Simpan Catatan Kas";
       }
     });
 
-    // FIREBASE: Hapus Kas dari Firestore
+    // HAPUS DATA KAS DARI FIRESTORE
     async function deleteKas(id) {
       if(confirm("Hapus catatan kas ini?")) {
         try {
@@ -845,7 +832,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       `).join('');
     }
 
-    // MODUL JASTIP
     function toggleJastipModal(show) {
       document.getElementById('jastip-modal').classList.toggle('hidden', !show);
     }
@@ -864,7 +850,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       });
     });
 
-    // FIREBASE: Simpan Order Jastip ke Firestore
+    // SIMPAN ORDER JASTIP KE CLOUD FIRESTORE
     document.getElementById('jastip-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-jastip');
@@ -902,14 +888,14 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         alert("✅ Order Jastip berhasil disimpan ke Cloud!");
       } catch (err) {
         console.error("Gagal simpan jastip: ", err);
-        alert("Terjadi kendala saat menyimpan order.");
+        alert("Gagal menyimpan order ke database.");
       } finally {
         btn.disabled = false;
         btn.innerText = "Simpan Order Jastip";
       }
     });
 
-    // FIREBASE: Update Status Bayar Jastip di Firestore
+    // UBAH STATUS LUNAS JASTIP
     async function toggleLunasOrder(id) {
       const order = jastipOrders.find(o => o.id === id);
       if (!order) return;
@@ -932,7 +918,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       }
     }
 
-    // FIREBASE: Hapus Order Jastip dari Firestore
+    // HAPUS ORDER JASTIP DARI FIRESTORE
     async function deleteJastip(id) {
       if(confirm("Hapus pesanan jastip ini?")) {
         try {
@@ -1019,7 +1005,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       `).join('');
     }
 
-    // INISIALISASI & SINKRONISASI REAL-TIME CLOUD
+    // LISTENER REAL-TIME SAAT APLIKASI DIBUKA
     window.onload = () => {
       const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
       barChart = new Chart(ctxBar, {
@@ -1054,7 +1040,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
 
       loadBankSettings();
 
-      // Sinkronisasi Kas Real-Time dari Firestore
+      // Mendengarkan data Kas secara Real-Time dari Firestore
       db.collection("kas").orderBy("createdAt", "desc").onSnapshot(snapshot => {
         kasTransactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         updateKasDashboard();
@@ -1062,7 +1048,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
         console.error("Listener Kas Error: ", err);
       });
 
-      // Sinkronisasi Jastip Real-Time dari Firestore
+      // Mendengarkan data Jastip secara Real-Time dari Firestore
       db.collection("jastip").orderBy("createdAt", "desc").onSnapshot(snapshot => {
         jastipOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         updateJastipModule();
