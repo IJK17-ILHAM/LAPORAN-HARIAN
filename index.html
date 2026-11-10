@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id" class="h-full bg-[#23433C]">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- Warna Status Bar Browser HP (Otomatis Full) -->
+  <meta name="theme-color" id="theme-color-meta" content="#23433C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
   <title>BukuKas & Jastip Tracker</title>
   
   <!-- Font Modern & Tailwind CSS -->
@@ -19,9 +25,15 @@
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
-    body { 
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #23433C; /* Sinkron 100% dengan layar pembuka agar tidak ada celah */
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.4s ease;
     }
     
     ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -63,25 +75,29 @@
     #splash-screen {
       transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
       will-change: transform;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
     }
     #splash-screen.slide-up {
       transform: translateY(-100%);
     }
   </style>
 </head>
-<body class="bg-[#94B5B0] text-[#1E3631] min-h-screen relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
+<body class="text-[#1E3631] relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
   <!-- ============================================================== -->
-  <!-- [LAYAR PEMBUKA: KEUANGAN - RAPAT & MENUTUP PENUH LAYAR HP]     -->
+  <!-- [LAYAR PEMBUKA: KEUANGAN - FULL COLOR TANPA CELAH SAMA SEKALI] -->
   <!-- ============================================================== -->
-  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-full h-[100dvh] bg-[#23433C] flex flex-col items-center justify-between p-6 pb-12 select-none cursor-pointer overflow-hidden touch-none">
+  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-screen h-screen bg-[#23433C] flex flex-col items-center justify-between select-none cursor-pointer overflow-hidden touch-none">
     
-    <!-- Ornamen Latar Opaque Gelap -->
+    <!-- Ornamen Lingkaran Halus -->
     <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/15 blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/30 blur-3xl pointer-events-none"></div>
 
     <!-- Header Kecil -->
-    <div class="w-full flex items-center justify-between max-w-sm pt-4 z-10">
+    <div class="w-full flex items-center justify-between max-w-sm pt-2 px-2 z-10">
       <span class="text-[11px] font-extrabold tracking-widest text-[#FAF5EB]/70 uppercase flex items-center gap-1.5">
         <i class="fa-solid fa-cloud text-emerald-400"></i> Cloud Synced
       </span>
@@ -109,7 +125,7 @@
     </div>
 
     <!-- Tombol Buka Dasbor -->
-    <div class="w-full max-w-xs pb-4 z-10 space-y-2">
+    <div class="w-full max-w-xs pb-2 z-10 space-y-2">
       <button type="button" class="w-full py-3.5 px-6 rounded-2xl bg-[#F9CE77] hover:bg-[#ebd28b] active:scale-95 text-[#1E3631] font-extrabold text-sm shadow-2xl flex items-center justify-center gap-2 transition duration-200">
         <span>Buka Dasbor</span>
         <i class="fa-solid fa-arrow-up text-xs"></i>
@@ -129,7 +145,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- [KONTEN UTAMA DASBOR: TERSEMBUNYI SAAT SCREEN AWAL AKTIF]       -->
+  <!-- [KONTEN UTAMA DASBOR]                                          -->
   <!-- ============================================================== -->
   <div id="main-app-container" class="relative z-10 flex flex-col min-h-screen pb-16 opacity-0 pointer-events-none transition-opacity duration-300">
     
@@ -137,7 +153,7 @@
     <header class="px-4 md:px-6 pt-4 pb-2">
       <div class="max-w-6xl mx-auto banner-glass-card rounded-2xl p-3 md:px-6 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
         
-        <!-- IKON FLOWMASTER: KLIK UNTUK KEMBALI KE LAYAR KEUANGAN -->
+        <!-- IKON FLOWMASTER: KLIK UNTUK KEMBALI KE LAYAR PEMBUKA -->
         <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Klik untuk kembali ke Layar Utama (KEUANGAN)">
           <div class="w-10 h-10 rounded-xl bg-[#5B8780] group-hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold transition">
             <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform"></i>
@@ -688,17 +704,22 @@
     document.getElementById('splash-date').innerText = formattedDate;
 
     // ==============================================================
-    // [EFEK BUKA & TUTUP DENGAN KUNCI SCROLL HALAMAN]
+    // [EFEK BUKA & TUTUP - SINKRONISASI LATAR FULL SCREEN]
     // ==============================================================
     function unlockDashboard() {
       const splash = document.getElementById('splash-screen');
       const mainApp = document.getElementById('main-app-container');
+      const metaTheme = document.getElementById('theme-color-meta');
       if (!splash || splash.classList.contains('slide-up')) return;
 
       // Geser layar ke atas
       splash.classList.add('slide-up');
 
-      // Tampilkan dasbor utama dan buka kuncian scroll body
+      // Ubah warna latar belakang & status bar iPhone ke warna dasbor
+      document.body.style.backgroundColor = '#94B5B0';
+      document.documentElement.style.backgroundColor = '#94B5B0';
+      if (metaTheme) metaTheme.setAttribute('content', '#94B5B0');
+
       mainApp.classList.remove('opacity-0', 'pointer-events-none');
       document.body.classList.remove('overflow-hidden');
 
@@ -712,11 +733,16 @@
     function returnToSplash() {
       const splash = document.getElementById('splash-screen');
       const mainApp = document.getElementById('main-app-container');
+      const metaTheme = document.getElementById('theme-color-meta');
       if (!splash) return;
 
-      // Kunci kembali scroll body dan sembunyikan dasbor
+      // Kunci scroll, kembalikan warna gelap penuh tanpa celah
       document.body.classList.add('overflow-hidden');
       window.scrollTo(0, 0);
+
+      document.body.style.backgroundColor = '#23433C';
+      document.documentElement.style.backgroundColor = '#23433C';
+      if (metaTheme) metaTheme.setAttribute('content', '#23433C');
 
       mainApp.classList.add('opacity-0', 'pointer-events-none');
       splash.style.display = 'flex';
@@ -743,9 +769,7 @@
       document.getElementById(id).classList.toggle('hidden', !show);
     }
 
-    // ==============================================================
     // KELOLA BANYAK PEMILIK
-    // ==============================================================
     function openManageOwnersModal() {
       renderOwnersManageList();
       toggleModal('modal-manage-owners', true);
@@ -835,9 +859,7 @@
       updateFilterSummaryBadge();
     }
 
-    // ==============================================================
     // FILTER MINIMALIS
-    // ==============================================================
     function toggleFilterDrawer() {
       const panel = document.getElementById('filter-drawer-panel');
       const chevron = document.getElementById('filter-chevron');
@@ -903,9 +925,7 @@
       return true;
     }
 
-    // ==============================================================
-    // [KONEKSI SPS - GOOGLE SPREADSHEET]
-    // ==============================================================
+    // KONEKSI SPS
     function updateSpsStatusUI(status, text) {
       const dot = document.getElementById('sps-dot');
       const label = document.getElementById('sps-status-text');
@@ -998,9 +1018,7 @@
       if (j) jastipOrders = JSON.parse(j);
     }
 
-    // ==============================================================
-    // KAS HARIAN & DASHBOARD LOGIC
-    // ==============================================================
+    // KAS LOGIC
     function switchMainTab(tab) {
       const mKas = document.getElementById('module-kas');
       const mJastip = document.getElementById('module-jastip');
