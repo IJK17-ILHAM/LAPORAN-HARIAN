@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>BukuKas & Jastip Tracker</title>
   
   <!-- Font Modern & Tailwind CSS -->
@@ -59,39 +59,42 @@
       animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    /* Transisi Geser Halus untuk Layar Pembuka */
+    /* Animasi Geser Layar Pembuka */
     #splash-screen {
-      transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.75s ease;
+      transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+      will-change: transform;
     }
     #splash-screen.slide-up {
       transform: translateY(-100%);
-      opacity: 0.95;
     }
   </style>
 </head>
-<body class="bg-[#94B5B0] text-[#1E3631] min-h-screen relative overflow-x-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
+<body class="bg-[#94B5B0] text-[#1E3631] min-h-screen relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
   <!-- ============================================================== -->
-  <!-- [LAYAR PEMBUKA / SPLASH SCREEN: KEUANGAN]                      -->
+  <!-- [LAYAR PEMBUKA: KEUANGAN - RAPAT & MENUTUP PENUH LAYAR HP]     -->
   <!-- ============================================================== -->
-  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 bg-gradient-to-br from-[#1E3631] via-[#5B8780] to-[#94B5B0] flex flex-col items-center justify-between p-6 text-center select-none cursor-pointer overflow-hidden">
+  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-full h-[100dvh] bg-[#23433C] flex flex-col items-center justify-between p-6 pb-12 select-none cursor-pointer overflow-hidden touch-none">
     
-    <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/20 blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/40 blur-3xl pointer-events-none"></div>
+    <!-- Ornamen Latar Opaque Gelap -->
+    <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/15 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/30 blur-3xl pointer-events-none"></div>
 
+    <!-- Header Kecil -->
     <div class="w-full flex items-center justify-between max-w-sm pt-4 z-10">
       <span class="text-[11px] font-extrabold tracking-widest text-[#FAF5EB]/70 uppercase flex items-center gap-1.5">
-        <i class="fa-solid fa-cloud text-emerald-300"></i> Cloud Synced
+        <i class="fa-solid fa-cloud text-emerald-400"></i> Cloud Synced
       </span>
       <span class="text-[11px] font-bold text-[#FAF5EB]/60" id="splash-date">Hari Ini</span>
     </div>
 
-    <div class="flex flex-col items-center space-y-5 my-auto z-10 px-4">
-      <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-[#FAF5EB] text-[#1E3631] shadow-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-[#F9CE77] transform hover:scale-105 transition duration-300">
+    <!-- Konten Tengah -->
+    <div class="flex flex-col items-center space-y-4 my-auto z-10 px-4">
+      <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-[#FAF5EB] text-[#1E3631] shadow-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-[#F9CE77]">
         <i class="fa-solid fa-wallet text-[#5B8780]"></i>
       </div>
 
-      <div class="space-y-1.5">
+      <div class="space-y-1 text-center">
         <h1 class="text-3xl md:text-5xl font-black text-[#FAF5EB] tracking-tight uppercase drop-shadow-md">
           KEUANGAN
         </h1>
@@ -100,17 +103,18 @@
         </p>
       </div>
 
-      <!-- Pemilik Info Mini Badges (Dinamis) -->
-      <div id="splash-owners-container" class="flex flex-wrap items-center justify-center gap-1.5 max-w-xs px-3 py-1.5 rounded-2xl bg-black/20 backdrop-blur-md border border-white/20 text-[#FAF5EB] text-xs font-bold">
+      <!-- Pemilik Badges -->
+      <div id="splash-owners-container" class="flex flex-wrap items-center justify-center gap-1.5 max-w-xs px-3 py-1.5 rounded-2xl bg-black/30 border border-white/20 text-[#FAF5EB] text-xs font-bold">
       </div>
     </div>
 
-    <div class="w-full max-w-xs pb-6 z-10 space-y-3">
-      <button type="button" class="w-full py-3.5 px-6 rounded-2xl bg-[#F9CE77] hover:bg-[#ebd28b] active:scale-95 text-[#1E3631] font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 transition duration-200">
+    <!-- Tombol Buka Dasbor -->
+    <div class="w-full max-w-xs pb-4 z-10 space-y-2">
+      <button type="button" class="w-full py-3.5 px-6 rounded-2xl bg-[#F9CE77] hover:bg-[#ebd28b] active:scale-95 text-[#1E3631] font-extrabold text-sm shadow-2xl flex items-center justify-center gap-2 transition duration-200">
         <span>Buka Dasbor</span>
         <i class="fa-solid fa-arrow-up text-xs"></i>
       </button>
-      <p class="text-[10px] text-[#FAF5EB]/60 font-medium">Klik di mana saja untuk membuka</p>
+      <p class="text-[10px] text-[#FAF5EB]/60 font-medium text-center">Klik di mana saja untuk membuka</p>
     </div>
   </div>
 
@@ -124,21 +128,24 @@
     </svg>
   </div>
 
-  <div class="relative z-10 flex flex-col min-h-screen pb-16">
+  <!-- ============================================================== -->
+  <!-- [KONTEN UTAMA DASBOR: TERSEMBUNYI SAAT SCREEN AWAL AKTIF]       -->
+  <!-- ============================================================== -->
+  <div id="main-app-container" class="relative z-10 flex flex-col min-h-screen pb-16 opacity-0 pointer-events-none transition-opacity duration-300">
     
     <!-- HEADER UTAMA DASBOR -->
     <header class="px-4 md:px-6 pt-4 pb-2">
       <div class="max-w-6xl mx-auto banner-glass-card rounded-2xl p-3 md:px-6 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
         
-        <!-- [IKON & BRAND FLOWMASTER: KLIK UNTUK KEMBALI KE DASBOR PEMBUKAAN] -->
-        <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Klik untuk kembali ke Layar Pembuka (KEUANGAN)">
-          <div class="w-10 h-10 rounded-xl bg-[#5B8780] group-hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold transition transform group-hover:-translate-y-0.5">
-            <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform duration-300"></i>
+        <!-- IKON FLOWMASTER: KLIK UNTUK KEMBALI KE LAYAR KEUANGAN -->
+        <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Klik untuk kembali ke Layar Utama (KEUANGAN)">
+          <div class="w-10 h-10 rounded-xl bg-[#5B8780] group-hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold transition">
+            <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform"></i>
           </div>
           <div>
             <div class="flex items-center gap-1.5">
               <h1 class="text-base md:text-lg font-extrabold text-[#1E3631] tracking-tight leading-none group-hover:text-[#5B8780] transition">FlowMaster</h1>
-              <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-[#5B8780]/15 text-[#5B8780] font-extrabold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-[#5B8780]/15 text-[#5B8780] font-extrabold flex items-center gap-1">
                 <i class="fa-solid fa-arrow-left"></i> Menu
               </span>
             </div>
@@ -192,14 +199,12 @@
           </div>
 
           <div class="flex items-center gap-1.5">
-            <!-- Tombol Buka/Tutup Filter -->
             <button onclick="toggleFilterDrawer()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5">
               <i class="fa-solid fa-filter text-[#5B8780]"></i>
               <span>Sesuaikan Filter</span>
               <i id="filter-chevron" class="fa-solid fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200"></i>
             </button>
 
-            <!-- Tombol Kelola Pemilik -->
             <button onclick="openManageOwnersModal()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5" title="Tambah / Hapus Nama Pemilik">
               <i class="fa-solid fa-users text-[#5B8780]"></i>
               <span class="hidden sm:inline">Kelola Pemilik</span>
@@ -268,7 +273,7 @@
             </div>
           </div>
 
-          <!-- KARTU PENGELUARAN SETIAP PEMILIK (DINAMIS & OTOMATIS) -->
+          <!-- KARTU PENGELUARAN SETIAP PEMILIK -->
           <div>
             <p class="text-xs font-bold text-[#5B8780] uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-chart-pie"></i> Pengeluaran Per Pemilik
@@ -321,8 +326,6 @@
           <div class="banner-glass-card rounded-3xl p-5 md:p-7">
             <h2 class="text-lg font-extrabold text-[#1E3631] mb-4 text-center">Catat Kas & Pengeluaran</h2>
             <form id="kas-transaction-form" class="space-y-4">
-              
-              <!-- PEMILIH PENGELUARAN SIAPA -->
               <div>
                 <div class="flex items-center justify-between mb-1">
                   <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Milik Siapa?</label>
@@ -332,7 +335,6 @@
                 </div>
               </div>
 
-              <!-- TIPE -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe Transaksi</label>
                 <div class="grid grid-cols-2 gap-2 p-1 bg-white/60 rounded-xl border border-white">
@@ -351,19 +353,16 @@
                 </div>
               </div>
 
-              <!-- TANGGAL -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tanggal</label>
                 <input type="date" id="kas_date" required class="w-full px-4 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
-              <!-- NOMINAL -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nominal (Rp)</label>
                 <input type="text" id="kas_amount" required inputmode="numeric" placeholder="0" class="currency-input w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-base font-extrabold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
-              <!-- KATEGORI -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Kategori</label>
                 <select id="kas_category" class="w-full px-3 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-semibold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
@@ -376,7 +375,6 @@
                 </select>
               </div>
 
-              <!-- KETERANGAN -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Keterangan</label>
                 <input type="text" id="kas_desc" placeholder="Contoh: Kopi, Skincare, Bensin" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
@@ -434,7 +432,6 @@
           </div>
         </div>
 
-        <!-- 4 KPI Metrik Jastip -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <div class="banner-glass-card rounded-2xl p-4">
             <span class="text-[10px] font-bold uppercase text-[#5B8780]">Modal Talangan</span>
@@ -454,7 +451,6 @@
           </div>
         </div>
 
-        <!-- Tabel Jastip -->
         <div class="banner-glass-card rounded-2xl overflow-hidden p-4 md:p-5 space-y-3">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <h3 class="text-sm md:text-base font-bold text-[#1E3631]">Daftar Order Jastip</h3>
@@ -490,7 +486,7 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODAL: KELOLA BANYAK PEMILIK (DYNAMIC OWNERS MANAGER)          -->
+  <!-- MODAL: KELOLA BANYAK PEMILIK                                   -->
   <!-- ============================================================== -->
   <div id="modal-manage-owners" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-white space-y-4">
@@ -667,7 +663,6 @@
 
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
-    // URL SPREADSHEET (SPS) ANDA - SUDAH TERPASANG PERMANEN
     const SPS_API_URL = 'https://script.google.com/macros/s/AKfycbwqm7EtNuVkZQUxGKiH99qAt1KGA1pAbBn-2ER_GUra3Ar5aw2Y4yEL2hQ651KoMGpW/exec';
 
     let kasTransactions = [];
@@ -675,17 +670,14 @@
     let barChart, donutChart;
     let currentJastipFilter = 'semua';
 
-    // Daftar Pemilik Dinamis
     let ownersList = JSON.parse(localStorage.getItem('fm_owners_list')) || ['Ilham', 'Ayang'];
 
     const OWNER_COLORS = ['#0284c7', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#14b8a6', '#6366f1'];
     const OWNER_EMOJIS = ['👨', '👩', '👤', '⭐', '✨', '💼', '🏡', '🎯'];
 
-    // Filter Aktif Kas
     let currentTimeFilter = 'bulan_ini'; 
     let currentOwnerFilter = 'semua';    
 
-    // Set Default Input Tanggal ke Hari Ini
     const todayISO = new Date().toISOString().split('T')[0];
     document.getElementById('kas_date').value = todayISO;
 
@@ -696,33 +688,40 @@
     document.getElementById('splash-date').innerText = formattedDate;
 
     // ==============================================================
-    // [EFEK PEMBUKA: BUKA & KEMBALI KE DASBOR PEMBUKAAN]
+    // [EFEK BUKA & TUTUP DENGAN KUNCI SCROLL HALAMAN]
     // ==============================================================
     function unlockDashboard() {
       const splash = document.getElementById('splash-screen');
+      const mainApp = document.getElementById('main-app-container');
       if (!splash || splash.classList.contains('slide-up')) return;
 
+      // Geser layar ke atas
       splash.classList.add('slide-up');
+
+      // Tampilkan dasbor utama dan buka kuncian scroll body
+      mainApp.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.classList.remove('overflow-hidden');
 
       setTimeout(() => {
         splash.style.display = 'none';
         if (barChart) barChart.resize();
         if (donutChart) donutChart.resize();
-      }, 760);
+      }, 660);
     }
 
-    // FUNGSI BARU: KLIK IKON/LOGO FLOWMASTER UNTUK KEMBALI KE LAYAR UTAMA
     function returnToSplash() {
       const splash = document.getElementById('splash-screen');
+      const mainApp = document.getElementById('main-app-container');
       if (!splash) return;
 
-      // Munculkan kembali splash screen
+      // Kunci kembali scroll body dan sembunyikan dasbor
+      document.body.classList.add('overflow-hidden');
+      window.scrollTo(0, 0);
+
+      mainApp.classList.add('opacity-0', 'pointer-events-none');
       splash.style.display = 'flex';
       
-      // Paksa render agar transisi slide-down terbaca mulus
-      void splash.offsetHeight;
-
-      // Hapus class slide-up agar layar meluncur kembali ke bawah
+      void splash.offsetHeight; // Force reflow
       splash.classList.remove('slide-up');
     }
 
@@ -745,7 +744,7 @@
     }
 
     // ==============================================================
-    // KELOLA BANYAK PEMILIK (DYNAMIC OWNERS)
+    // KELOLA BANYAK PEMILIK
     // ==============================================================
     function openManageOwnersModal() {
       renderOwnersManageList();
@@ -802,7 +801,6 @@
     }
 
     function applyDynamicOwnersUI() {
-      // 1. Splash Screen Badges
       const splashContainer = document.getElementById('splash-owners-container');
       splashContainer.innerHTML = ownersList.map((name, i) => `
         <span class="px-2 py-0.5 rounded-full bg-white/10 text-[11px]">
@@ -810,7 +808,6 @@
         </span>
       `).join('');
 
-      // 2. Select Filter Pemilik
       const selectFilter = document.getElementById('select-owner-filter');
       selectFilter.innerHTML = `
         <option value="semua">Semua Pemilik</option>
@@ -818,7 +815,6 @@
       `;
       selectFilter.value = currentOwnerFilter;
 
-      // 3. Form Input Radio Pemilik
       const formRadios = document.getElementById('form-owner-radios');
       formRadios.innerHTML = ownersList.map((name, i) => `
         <label class="cursor-pointer">
@@ -830,7 +826,6 @@
         </label>
       `).join('');
 
-      // 4. Update Bar Chart
       if (barChart) {
         barChart.data.labels = ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`);
         barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
@@ -841,7 +836,7 @@
     }
 
     // ==============================================================
-    // FILTER MINIMALIS (MODE SEMBUNYI / COLLAPSIBLE)
+    // FILTER MINIMALIS
     // ==============================================================
     function toggleFilterDrawer() {
       const panel = document.getElementById('filter-drawer-panel');
@@ -909,7 +904,7 @@
     }
 
     // ==============================================================
-    // [KONEKSI OTOMATIS SPS - GOOGLE SPREADSHEET]
+    // [KONEKSI SPS - GOOGLE SPREADSHEET]
     // ==============================================================
     function updateSpsStatusUI(status, text) {
       const dot = document.getElementById('sps-dot');
@@ -1072,7 +1067,6 @@
       document.getElementById('kas_date').value = todayISO;
       document.getElementById('kas_amount').value = '';
 
-      // Kirim otomatis ke Google Spreadsheet SPS
       syncToSps('addKas', {
         ...newEntry,
         desc: `[${owner}] ${desc}`
@@ -1120,13 +1114,11 @@
       const bal = inc - exp;
       let totalAllOwnerExp = Object.values(ownerExpMap).reduce((a, b) => a + b, 0);
 
-      // Update KPI Utama
       document.getElementById('kpi-income').innerText = formatRupiah(inc);
       document.getElementById('kpi-expense').innerText = formatRupiah(exp);
       document.getElementById('kpi-balance').innerText = formatRupiah(bal);
       document.getElementById('kas-count').innerText = `${filtered.length} Data (${kasTransactions.length} Total)`;
 
-      // Render Kartu Dinamis Pemilik
       const cardsContainer = document.getElementById('dynamic-owner-cards-container');
       cardsContainer.innerHTML = ownersList.map((name, i) => {
         const userExp = ownerExpMap[name] || 0;
@@ -1147,20 +1139,17 @@
         `;
       }).join('');
 
-      // Update Bar Chart
       barChart.data.labels = ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`);
       barChart.data.datasets[0].data = ownersList.map(name => ownerExpMap[name] || 0);
       barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
       barChart.update();
 
-      // Update Donut Chart
       const cLabels = Object.keys(catMap);
       donutChart.data.labels = cLabels;
       donutChart.data.datasets[0].data = Object.values(catMap);
       document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
       donutChart.update();
 
-      // Render Tabel Log
       const tbody = document.getElementById('kas-table-body');
       if (!filtered.length) {
         tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-xs text-[#5B8780]">Tidak ada transaksi untuk filter ini.</td></tr>`;
@@ -1196,9 +1185,7 @@
       }).join('');
     }
 
-    // ==============================================================
-    // OCR SCAN STRUK NOTA
-    // ==============================================================
+    // OCR SCAN
     function triggerReceiptScan() {
       switchMainTab('tab-kas');
       switchKasView('kas-form');
@@ -1276,9 +1263,7 @@
       return 0;
     }
 
-    // ==============================================================
-    // OPERASIONAL JASTIP LOGIC
-    // ==============================================================
+    // JASTIP
     function toggleJastipModal(show) {
       document.getElementById('jastip-modal').classList.toggle('hidden', !show);
     }
@@ -1331,7 +1316,6 @@
       toggleDpField();
       toggleJastipModal(false);
 
-      // Kirim otomatis ke Google Spreadsheet SPS
       syncToSps('addJastip', newOrder);
 
       alert("✅ Order Jastip berhasil disimpan!");
@@ -1438,9 +1422,7 @@
       `).join('');
     }
 
-    // ==============================================================
-    // SHOPEEPAY & WA INVOICE
-    // ==============================================================
+    // SHOPEEPAY
     function loadBankSettings() {
       const defaultBank = 'ShopeePay';
       const defaultAcc = '0895333536524';
@@ -1550,7 +1532,7 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       window.open(waUrl, '_blank');
     }
 
-    // Inisialisasi Aplikasi
+    // Inisialisasi
     window.onload = () => {
       const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
       barChart = new Chart(ctxBar, {
@@ -1594,7 +1576,6 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       updateKasDashboard();
       updateJastipModule();
 
-      // Sinkronkan data cloud otomatis
       fetchFromSps();
     };
   </script>
