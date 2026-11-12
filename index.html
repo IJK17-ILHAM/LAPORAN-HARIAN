@@ -4,24 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- Warna Status Bar Browser HP (Otomatis Full) -->
   <meta name="theme-color" id="theme-color-meta" content="#23433C">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
-  <title>BukuKas & Jastip Tracker</title>
+  <title>BukuKas, Jastip & Rekap Belanja Real-Time</title>
   
-  <!-- Font Modern & Tailwind CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Font Awesome & Chart.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Tesseract.js (AI Pemindai OCR Nota) -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
@@ -30,7 +25,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background-color: #23433C; /* Sinkron 100% dengan layar pembuka agar tidak ada celah */
+      background-color: #23433C;
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
       transition: background-color 0.4s ease;
@@ -71,7 +66,6 @@
       animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    /* Animasi Geser Layar Pembuka */
     #splash-screen {
       transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
       will-change: transform;
@@ -83,28 +77,59 @@
     #splash-screen.slide-up {
       transform: translateY(-100%);
     }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      #splash-screen, header, .no-print, #modal-rekap, #modal-rekap-config, #wa-invoice-modal, #modal-manage-owners, #modal-rekap-wa {
+        display: none !important;
+      }
+      #main-app-container {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #module-kas, #module-jastip {
+        display: none !important;
+      }
+      #module-rekap {
+        display: block !important;
+      }
+      .banner-glass-card {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      table {
+        border: 1px solid #000 !important;
+      }
+      th, td {
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+      }
+      .print-only-header {
+        display: block !important;
+      }
+    }
   </style>
 </head>
 <body class="text-[#1E3631] relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
-  <!-- ============================================================== -->
-  <!-- [LAYAR PEMBUKA: KEUANGAN - FULL COLOR TANPA CELAH SAMA SEKALI] -->
-  <!-- ============================================================== -->
-  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-screen h-screen bg-[#23433C] flex flex-col items-center justify-between select-none cursor-pointer overflow-hidden touch-none">
-    
-    <!-- Ornamen Lingkaran Halus -->
+  <!-- LAYAR PEMBUKA -->
+  <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-screen h-screen bg-[#23433C] flex flex-col items-center justify-between select-none cursor-pointer overflow-hidden touch-none no-print">
     <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/15 blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/30 blur-3xl pointer-events-none"></div>
 
-    <!-- Header Kecil -->
     <div class="w-full flex items-center justify-between max-w-sm pt-2 px-2 z-10">
       <span class="text-[11px] font-extrabold tracking-widest text-[#FAF5EB]/70 uppercase flex items-center gap-1.5">
-        <i class="fa-solid fa-cloud text-emerald-400"></i> Cloud Synced
+        <i class="fa-solid fa-bolt text-emerald-400"></i> Real-Time Synced
       </span>
       <span class="text-[11px] font-bold text-[#FAF5EB]/60" id="splash-date">Hari Ini</span>
     </div>
 
-    <!-- Konten Tengah -->
     <div class="flex flex-col items-center space-y-4 my-auto z-10 px-4">
       <div class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-[#FAF5EB] text-[#1E3631] shadow-2xl flex items-center justify-center text-3xl md:text-4xl border-2 border-[#F9CE77]">
         <i class="fa-solid fa-wallet text-[#5B8780]"></i>
@@ -115,16 +140,14 @@
           KEUANGAN
         </h1>
         <p class="text-xs md:text-sm font-semibold text-[#FAF5EB]/80 max-w-xs mx-auto">
-          Arus Kas Multi-Pemilik & Modul Order Jastip
+          Kas Personal, Jastip & Rekap Belanja Real-Time
         </p>
       </div>
 
-      <!-- Pemilik Badges -->
       <div id="splash-owners-container" class="flex flex-wrap items-center justify-center gap-1.5 max-w-xs px-3 py-1.5 rounded-2xl bg-black/30 border border-white/20 text-[#FAF5EB] text-xs font-bold">
       </div>
     </div>
 
-    <!-- Tombol Buka Dasbor -->
     <div class="w-full max-w-xs pb-2 z-10 space-y-2">
       <button type="button" class="w-full py-3.5 px-6 rounded-2xl bg-[#F9CE77] hover:bg-[#ebd28b] active:scale-95 text-[#1E3631] font-extrabold text-sm shadow-2xl flex items-center justify-center gap-2 transition duration-200">
         <span>Buka Dasbor</span>
@@ -134,27 +157,11 @@
     </div>
   </div>
 
-  <!-- BACKGROUND BLOBS DASBOR UTAMA -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-    <svg class="absolute -bottom-16 -left-16 w-64 md:w-[480px] text-[#F9CE77]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <path fill="currentColor" d="M38.1,-63.9C49.9,-58.5,60.4,-49.6,67.6,-38.3C74.9,-27,78.8,-13.5,77.7,-0.6C76.6,12.2,70.5,24.5,63.1,36C55.6,47.6,46.8,58.4,35.4,64.8C24,71.2,12,73.1,-0.6,74.1C-13.1,75.1,-26.3,75.1,-38.3,69.5C-50.4,63.9,-61.4,52.7,-68.6,39.6C-75.9,26.5,-79.4,11.5,-78.2,-3C-77,-17.5,-71.1,-31.6,-62.1,-43C-53.1,-54.4,-41,-63.2,-28.4,-67.9C-15.8,-72.6,-2.6,-73.2,9.9,-68.8C22.4,-64.4,34.8,-69.3,38.1,-63.9Z" transform="translate(100 100)" />
-    </svg>
-    <svg class="absolute -top-20 -right-20 w-72 md:w-[540px] text-[#5B8780]" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <path fill="currentColor" d="M43.7,-74.2C55.9,-68.7,64.7,-56.3,71.1,-43.2C77.4,-30,81.3,-15,79.8,-0.9C78.2,13.3,71.2,26.5,63.3,38.4C55.4,50.2,46.6,60.6,35.3,67.4C24,74.2,10.2,77.3,-3.8,83.9C-17.9,90.4,-32.2,100.4,-44.6,96.3C-57,92.2,-67.4,74.1,-74.6,56.9C-81.8,39.6,-85.7,23.3,-84.9,7.6C-84.1,-8.1,-78.5,-23.2,-70.7,-36.8C-62.9,-50.3,-52.9,-62.3,-40.4,-67.5C-28,-72.7,-13.2,-71.1,0.9,-72.7C15.1,-74.3,31.4,-79.7,43.7,-74.2Z" transform="translate(100 100)" />
-    </svg>
-  </div>
-
-  <!-- ============================================================== -->
-  <!-- [KONTEN UTAMA DASBOR]                                          -->
-  <!-- ============================================================== -->
+  <!-- KONTEN UTAMA -->
   <div id="main-app-container" class="relative z-10 flex flex-col min-h-screen pb-16 opacity-0 pointer-events-none transition-opacity duration-300">
-    
-    <!-- HEADER UTAMA DASBOR -->
-    <header class="px-4 md:px-6 pt-4 pb-2">
+    <header class="px-4 md:px-6 pt-4 pb-2 no-print">
       <div class="max-w-6xl mx-auto banner-glass-card rounded-2xl p-3 md:px-6 md:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-        
-        <!-- IKON FLOWMASTER: KLIK UNTUK KEMBALI KE LAYAR PEMBUKA -->
-        <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Klik untuk kembali ke Layar Utama (KEUANGAN)">
+        <div onclick="returnToSplash()" class="flex items-center gap-2.5 cursor-pointer select-none group active:scale-95 transition duration-200" title="Kembali ke Layar Depan">
           <div class="w-10 h-10 rounded-xl bg-[#5B8780] group-hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base md:text-lg font-bold transition">
             <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform"></i>
           </div>
@@ -169,24 +176,27 @@
           </div>
         </div>
 
-        <!-- TAB NAVIGASI UTAMA -->
-        <nav class="flex items-center gap-2 p-1 bg-white/60 border border-white rounded-xl w-full sm:w-auto justify-center">
-          <button onclick="switchMainTab('tab-kas')" id="nav-tab-kas" class="header-tab-btn active px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2">
+        <nav class="flex items-center gap-1.5 p-1 bg-white/60 border border-white rounded-xl w-full sm:w-auto justify-center overflow-x-auto">
+          <button onclick="switchMainTab('tab-kas')" id="nav-tab-kas" class="header-tab-btn active px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap">
             <i class="fa-solid fa-wallet"></i>
             <span>Kas & Dompet</span>
           </button>
           
-          <button onclick="switchMainTab('tab-jastip')" id="nav-tab-jastip" class="header-tab-btn px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2">
+          <button onclick="switchMainTab('tab-jastip')" id="nav-tab-jastip" class="header-tab-btn px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap">
             <i class="fa-solid fa-bag-shopping text-[#F9CE77]"></i>
-            <span>Kelola Jastip</span>
+            <span>Jastip</span>
+          </button>
+
+          <button onclick="switchMainTab('tab-rekap')" id="nav-tab-rekap" class="header-tab-btn px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-1.5 whitespace-nowrap">
+            <i class="fa-solid fa-table-list text-emerald-600"></i>
+            <span>Rekap Belanja</span>
           </button>
         </nav>
 
-        <!-- KONEKSI OTOMATIS SPS & TANGGAL -->
         <div class="flex items-center gap-2">
-          <button onclick="fetchFromSps(true)" id="sps-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 border border-white text-xs font-bold text-[#1E3631] hover:bg-white transition shadow-sm active:scale-95" title="Klik untuk refresh sinkronisasi SPS">
+          <button onclick="refreshActiveTabSps()" id="sps-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 border border-white text-xs font-bold text-[#1E3631] hover:bg-white transition shadow-sm active:scale-95">
             <span id="sps-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow"></span>
-            <span id="sps-status-text">SPS Terhubung</span>
+            <span id="sps-status-text">Real-Time On</span>
             <i class="fa-solid fa-arrows-rotate text-[#5B8780] ml-0.5 text-[10px]"></i>
           </button>
 
@@ -200,12 +210,8 @@
 
     <main class="max-w-6xl mx-auto px-4 md:px-6 py-3 flex-1 w-full">
 
-      <!-- ============================================================== -->
-      <!-- [MODUL 1] KAS HARIAN, MINGGUAN & BULANAN                       -->
-      <!-- ============================================================== -->
+      <!-- MODUL 1: KAS -->
       <section id="module-kas" class="space-y-4 md:space-y-5">
-        
-        <!-- BAR RINGKAS FILTER (MODE SEMBUNYI / MINIMALIS) -->
         <div class="banner-glass-card rounded-2xl p-2.5 md:p-3 flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-xs text-[#5B8780] font-bold">Filter Aktif:</span>
@@ -221,189 +227,109 @@
               <i id="filter-chevron" class="fa-solid fa-chevron-down text-[10px] ml-0.5 transition-transform duration-200"></i>
             </button>
 
-            <button onclick="openManageOwnersModal()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5" title="Tambah / Hapus Nama Pemilik">
+            <button onclick="openManageOwnersModal()" class="px-3 py-1.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5">
               <i class="fa-solid fa-users text-[#5B8780]"></i>
               <span class="hidden sm:inline">Kelola Pemilik</span>
             </button>
           </div>
         </div>
 
-        <!-- PANEL FILTER TERSEMBUNYI (DRAWER) -->
         <div id="filter-drawer-panel" class="hidden banner-glass-card rounded-2xl p-3 md:p-4 space-y-3 border border-white/80 transition-all">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Periode Waktu</label>
-              <select id="select-time-filter" onchange="onSelectTimeChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
+              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Periode</label>
+              <select id="select-time-filter" onchange="onSelectTimeChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
                 <option value="hari_ini">Hari Ini</option>
-                <option value="minggu_ini">Minggu Ini (7 Hari Terakhir)</option>
+                <option value="minggu_ini">Minggu Ini</option>
                 <option value="bulan_ini" selected>Bulan Ini</option>
                 <option value="semua">Semua Periode</option>
               </select>
             </div>
-
             <div>
-              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pemilik Pengeluaran</label>
-              <select id="select-owner-filter" onchange="onSelectOwnerChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
-              </select>
+              <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pemilik</label>
+              <select id="select-owner-filter" onchange="onSelectOwnerChange(this.value)" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]"></select>
             </div>
           </div>
         </div>
 
-        <!-- SUB NAVIGASI KAS & FOTO NOTA -->
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <div class="flex items-center gap-1 bg-white/50 p-1 rounded-xl border border-white/60">
             <button onclick="switchKasView('kas-dash')" id="sub-kas-dash" class="sub-menu-btn active px-3 py-1.5 rounded-lg text-xs font-bold">Dashboard</button>
             <button onclick="switchKasView('kas-form')" id="sub-kas-form" class="sub-menu-btn px-3 py-1.5 rounded-lg text-xs font-bold">+ Catat Kas</button>
             <button onclick="switchKasView('kas-log')" id="sub-kas-log" class="sub-menu-btn px-3 py-1.5 rounded-lg text-xs font-bold">Log Riwayat</button>
           </div>
-          
           <button onclick="triggerReceiptScan()" class="px-3.5 py-1.5 bg-[#F9CE77] hover:bg-[#ebbe63] text-[#1E3631] rounded-xl text-xs font-extrabold shadow-sm flex items-center gap-1.5 transition active:scale-95 border border-white">
-            <i class="fa-solid fa-camera"></i> Foto / Scan Struk
+            <i class="fa-solid fa-camera"></i> Scan Struk
           </button>
         </div>
 
-        <!-- 1.1 Dashboard Kas -->
         <div id="view-kas-dash" class="space-y-4 md:space-y-5">
-          
-          <!-- 3 KPI Utama -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
             <div class="banner-glass-card rounded-2xl p-4 md:p-5">
-              <div class="flex justify-between items-center">
-                <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Pemasukan</p>
-                <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold" id="badge-period-income">Bulan Ini</span>
-              </div>
+              <span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Pemasukan</span>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#237059] mt-0.5" id="kpi-income">Rp 0</h3>
             </div>
-            
             <div class="banner-glass-card rounded-2xl p-4 md:p-5">
-              <div class="flex justify-between items-center">
-                <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Total Pengeluaran</p>
-                <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold" id="badge-period-expense">Bulan Ini</span>
-              </div>
+              <span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Total Pengeluaran</span>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#C04848] mt-0.5" id="kpi-expense">Rp 0</h3>
             </div>
-
             <div class="banner-glass-card rounded-2xl p-4 md:p-5 border-l-4 border-[#5B8780]">
-              <p class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Sisa Saldo Kas</p>
+              <span class="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">Sisa Saldo</span>
               <h3 class="text-xl md:text-2xl font-extrabold text-[#1E3631] mt-0.5" id="kpi-balance">Rp 0</h3>
             </div>
           </div>
 
-          <!-- KARTU PENGELUARAN SETIAP PEMILIK -->
-          <div>
-            <p class="text-xs font-bold text-[#5B8780] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <i class="fa-solid fa-chart-pie"></i> Pengeluaran Per Pemilik
-            </p>
-            <div id="dynamic-owner-cards-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            </div>
-          </div>
+          <div id="dynamic-owner-cards-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"></div>
 
-          <!-- Charts -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <div class="lg:col-span-2 banner-glass-card rounded-2xl p-4 md:p-6">
-              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Perbandingan Pengeluaran Pemilik</h3>
-              <div class="h-48 md:h-60 relative">
-                <canvas id="cashflowBarChart"></canvas>
-              </div>
+              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Pengeluaran Pemilik</h3>
+              <div class="h-48 md:h-60 relative"><canvas id="cashflowBarChart"></canvas></div>
             </div>
             <div class="banner-glass-card rounded-2xl p-4 md:p-6 flex flex-col justify-between">
-              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Beban Kategori</h3>
-              <div class="h-44 md:h-52 relative flex items-center justify-center">
-                <canvas id="expenseCategoryChart"></canvas>
-              </div>
+              <h3 class="text-sm md:text-base font-bold text-[#1E3631] mb-2">Kategori</h3>
+              <div class="h-44 md:h-52 relative flex items-center justify-center"><canvas id="expenseCategoryChart"></canvas></div>
               <p class="text-center text-[10px] text-[#5B8780] mt-1" id="donut-empty-msg">Belum ada pengeluaran</p>
             </div>
           </div>
         </div>
 
-        <!-- 1.2 Form Kas -->
         <div id="view-kas-form" class="hidden max-w-lg mx-auto space-y-3">
-          <div class="banner-glass-card rounded-2xl p-4 border border-dashed border-[#5B8780]/40 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-[#5B8780]/15 text-[#5B8780] flex items-center justify-center text-lg">
-                <i class="fa-solid fa-receipt"></i>
-              </div>
-              <div>
-                <h4 class="text-xs font-bold text-[#1E3631]">Scan Nota Otomatis</h4>
-                <p class="text-[10px] text-[#5B8780]">Foto struk, nominal langsung terisi!</p>
-              </div>
-            </div>
-            <input type="file" id="receipt-camera-file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptFile(this)">
-            <button onclick="triggerReceiptScan()" type="button" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white text-xs font-bold rounded-xl shadow transition active:scale-95 flex items-center gap-1.5">
-              <i class="fa-solid fa-camera"></i> Foto Nota
-            </button>
-          </div>
-
+          <input type="file" id="receipt-camera-file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptFile(this)">
           <div id="ocr-loader" class="hidden banner-glass-card rounded-2xl p-4 text-center space-y-2 border border-[#F9CE77]">
             <div class="inline-block animate-spin rounded-full h-7 w-7 border-4 border-[#5B8780] border-t-transparent"></div>
             <p class="text-xs font-bold text-[#1E3631]" id="ocr-status-text">Sedang membaca teks nota...</p>
           </div>
-
           <div class="banner-glass-card rounded-3xl p-5 md:p-7">
-            <h2 class="text-lg font-extrabold text-[#1E3631] mb-4 text-center">Catat Kas & Pengeluaran</h2>
+            <h2 class="text-lg font-extrabold text-[#1E3631] mb-4 text-center">Catat Kas</h2>
             <form id="kas-transaction-form" class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Milik Siapa?</label>
-                  <button type="button" onclick="openManageOwnersModal()" class="text-[10px] text-[#5B8780] hover:underline font-bold">+ Kelola Pemilik</button>
-                </div>
-                <div id="form-owner-radios" class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-1.5 bg-white/60 rounded-xl border border-white">
-                </div>
+              <div id="form-owner-radios" class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-1.5 bg-white/60 rounded-xl border border-white"></div>
+              <div class="grid grid-cols-2 gap-2 p-1 bg-white/60 rounded-xl border border-white">
+                <label class="cursor-pointer">
+                  <input type="radio" name="kas_type" id="type_pemasukan" value="pemasukan" class="peer sr-only">
+                  <div class="text-center py-2 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#237059] peer-checked:text-white transition">+ Pemasukan</div>
+                </label>
+                <label class="cursor-pointer">
+                  <input type="radio" name="kas_type" id="type_pengeluaran" value="pengeluaran" class="peer sr-only" checked>
+                  <div class="text-center py-2 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#C04848] peer-checked:text-white transition">- Pengeluaran</div>
+                </label>
               </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe Transaksi</label>
-                <div class="grid grid-cols-2 gap-2 p-1 bg-white/60 rounded-xl border border-white">
-                  <label class="cursor-pointer">
-                    <input type="radio" name="kas_type" id="type_pemasukan" value="pemasukan" class="peer sr-only">
-                    <div class="text-center py-2 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#237059] peer-checked:text-white transition">
-                      + Pemasukan
-                    </div>
-                  </label>
-                  <label class="cursor-pointer">
-                    <input type="radio" name="kas_type" id="type_pengeluaran" value="pengeluaran" class="peer sr-only" checked>
-                    <div class="text-center py-2 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#C04848] peer-checked:text-white transition">
-                      - Pengeluaran
-                    </div>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tanggal</label>
-                <input type="date" id="kas_date" required class="w-full px-4 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nominal (Rp)</label>
-                <input type="text" id="kas_amount" required inputmode="numeric" placeholder="0" class="currency-input w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-base font-extrabold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Kategori</label>
-                <select id="kas_category" class="w-full px-3 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-semibold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
-                  <option value="Makan & Minum">Makan & Jajan</option>
-                  <option value="Belanja / Skincare">Belanja & Kebutuhan Pribadi</option>
-                  <option value="Operasional">Operasional Usaha / Kerja</option>
-                  <option value="Transport">Bensin & Transportasi</option>
-                  <option value="Omset / Gaji">Gaji / Omset Masuk</option>
-                  <option value="Lain-lain">Lain-lain</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Keterangan</label>
-                <input type="text" id="kas_desc" placeholder="Contoh: Kopi, Skincare, Bensin" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
-              </div>
-
-              <button type="submit" id="kas-btn-submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
-                <span>Simpan Transaksi Kas</span>
-              </button>
+              <input type="date" id="kas_date" required class="w-full px-4 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+              <input type="text" id="kas_amount" required inputmode="numeric" placeholder="Nominal (Rp)" class="currency-input w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-base font-extrabold text-[#1E3631]">
+              <select id="kas_category" class="w-full px-3 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-semibold text-[#1E3631]">
+                <option value="Makan & Minum">Makan & Jajan</option>
+                <option value="Belanja / Skincare">Belanja & Kebutuhan Pribadi</option>
+                <option value="Operasional">Operasional Usaha / Kerja</option>
+                <option value="Transport">Bensin & Transportasi</option>
+                <option value="Omset / Gaji">Gaji / Omset Masuk</option>
+                <option value="Lain-lain">Lain-lain</option>
+              </select>
+              <input type="text" id="kas_desc" placeholder="Keterangan transaksi" class="w-full px-4 py-2.5 bg-white/80 border border-white rounded-xl text-sm font-medium text-[#1E3631]">
+              <button type="submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow transition">Simpan Kas</button>
             </form>
           </div>
         </div>
 
-        <!-- 1.3 Log Kas -->
         <div id="view-kas-log" class="hidden banner-glass-card rounded-2xl overflow-hidden">
           <div class="p-4 border-b border-white flex items-center justify-between">
             <h3 class="text-sm font-bold text-[#1E3631]">Aktivitas Kas</h3>
@@ -413,75 +339,44 @@
             <table class="w-full text-left border-collapse text-xs md:text-sm">
               <thead>
                 <tr class="bg-white/40 border-b border-white text-[10px] font-bold uppercase text-[#5B8780]">
-                  <th class="py-3 px-4">Tanggal / Jam</th>
+                  <th class="py-3 px-4">Tanggal</th>
                   <th class="py-3 px-4">Pemilik</th>
                   <th class="py-3 px-4">Kategori & Catatan</th>
                   <th class="py-3 px-4 text-right">Nominal</th>
                   <th class="py-3 px-4 text-center">Aksi</th>
                 </tr>
               </thead>
-              <tbody id="kas-table-body" class="divide-y divide-white/60">
-                <tr><td colspan="5" class="text-center py-6 text-xs text-[#5B8780]">Belum ada data kas.</td></tr>
-              </tbody>
+              <tbody id="kas-table-body" class="divide-y divide-white/60"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- [MODUL 2] KELOLA JASTIP                                        -->
-      <!-- ============================================================== -->
+      <!-- MODUL 2: JASTIP -->
       <section id="module-jastip" class="hidden space-y-4 md:space-y-6">
-        
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h2 class="text-base md:text-xl font-extrabold text-[#1E3631]">Order Tracking Jasa Titip</h2>
-            <p class="text-[11px] md:text-xs text-[#5B8780]">Pantau modal belanja, fee bersih, piutang, dan kirim invoice WhatsApp.</p>
+            <h2 class="text-base md:text-xl font-extrabold text-[#1E3631]">Tracking Jastip</h2>
+            <p class="text-[11px] md:text-xs text-[#5B8780]">Modal, fee bersih, piutang, dan invoice WhatsApp.</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="openWaInvoiceModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 transition active:scale-95">
-              <i class="fa-brands fa-whatsapp text-sm"></i> Buat Invoice WA
-            </button>
-            <button onclick="toggleJastipModal(true)" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 transition active:scale-95">
-              <i class="fa-solid fa-plus text-[10px]"></i> Order Baru
-            </button>
+            <button onclick="openWaInvoiceModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> Invoice WA</button>
+            <button onclick="toggleJastipModal(true)" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-bold shadow flex items-center gap-1.5"><i class="fa-solid fa-plus text-[10px]"></i> Order Baru</button>
           </div>
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <div class="banner-glass-card rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase text-[#5B8780]">Modal Talangan</span>
-            <h3 class="text-base md:text-xl font-extrabold text-[#C04848]" id="jastip-kpi-modal">Rp 0</h3>
-          </div>
-          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]">
-            <span class="text-[10px] font-bold uppercase text-[#5B8780]">Fee Bersih Jastip</span>
-            <h3 class="text-base md:text-xl font-extrabold text-[#237059]" id="jastip-kpi-fee">Rp 0</h3>
-          </div>
-          <div class="banner-glass-card rounded-2xl p-4">
-            <span class="text-[10px] font-bold uppercase text-[#5B8780]">Total Tagihan Cust</span>
-            <h3 class="text-base md:text-xl font-extrabold text-[#1E3631]" id="jastip-kpi-total">Rp 0</h3>
-          </div>
-          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#F9CE77]">
-            <span class="text-[10px] font-bold uppercase text-[#5B8780]">Belum Lunas (Piutang)</span>
-            <h3 class="text-base md:text-xl font-extrabold text-amber-600" id="jastip-kpi-piutang">Rp 0</h3>
-          </div>
+          <div class="banner-glass-card rounded-2xl p-4"><span class="text-[10px] font-bold text-[#5B8780]">Modal</span><h3 class="text-base md:text-xl font-extrabold text-[#C04848]" id="jastip-kpi-modal">Rp 0</h3></div>
+          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]"><span class="text-[10px] font-bold text-[#5B8780]">Fee Bersih</span><h3 class="text-base md:text-xl font-extrabold text-[#237059]" id="jastip-kpi-fee">Rp 0</h3></div>
+          <div class="banner-glass-card rounded-2xl p-4"><span class="text-[10px] font-bold text-[#5B8780]">Total Tagihan</span><h3 class="text-base md:text-xl font-extrabold text-[#1E3631]" id="jastip-kpi-total">Rp 0</h3></div>
+          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#F9CE77]"><span class="text-[10px] font-bold text-[#5B8780]">Belum Lunas</span><h3 class="text-base md:text-xl font-extrabold text-amber-600" id="jastip-kpi-piutang">Rp 0</h3></div>
         </div>
 
         <div class="banner-glass-card rounded-2xl overflow-hidden p-4 md:p-5 space-y-3">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <h3 class="text-sm md:text-base font-bold text-[#1E3631]">Daftar Order Jastip</h3>
-            <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto text-xs">
-              <button onclick="filterJastip('semua')" class="jastip-f-btn active-j-f px-3 py-1.5 rounded-lg font-bold bg-[#5B8780] text-white">Semua</button>
-              <button onclick="filterJastip('piutang')" class="jastip-f-btn px-3 py-1.5 rounded-lg font-bold bg-white/70 text-[#1E3631]">Belum Lunas</button>
-              <button onclick="filterJastip('po')" class="jastip-f-btn px-3 py-1.5 rounded-lg font-bold bg-white/70 text-[#1E3631]">Open PO</button>
-              <button onclick="filterJastip('selesai')" class="jastip-f-btn px-3 py-1.5 rounded-lg font-bold bg-white/70 text-[#1E3631]">Selesai</button>
-            </div>
-          </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs md:text-sm">
               <thead>
-                <tr class="bg-white/40 border-b border-white text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[#5B8780]">
+                <tr class="bg-white/40 border-b border-white text-[10px] md:text-[11px] font-bold uppercase text-[#5B8780]">
                   <th class="py-3 px-3">Customer</th>
                   <th class="py-3 px-3">Barang & Store</th>
                   <th class="py-3 px-3 text-right">Modal</th>
@@ -489,205 +384,290 @@
                   <th class="py-3 px-3 text-right">Tagihan</th>
                   <th class="py-3 px-3 text-center">Status Bayar</th>
                   <th class="py-3 px-3 text-center">Logistik</th>
-                  <th class="py-3 px-3 text-center">Invoice WA / Aksi</th>
+                  <th class="py-3 px-3 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="jastip-table-body" class="divide-y divide-white/60 font-medium"></tbody>
             </table>
           </div>
         </div>
+      </section>
 
+      <!-- ================= MODUL 3: REKAP BELANJA ================= -->
+      <section id="module-rekap" class="hidden space-y-4 md:space-y-6">
+        <div class="hidden print-only-header text-center mb-6">
+          <h1 class="text-2xl font-black text-black uppercase tracking-wider">LEMBAR REKAP PENGELUARAN & TAGIHAN</h1>
+          <p class="text-xs text-gray-600 mt-1" id="print-date-display">Dicetak pada: -</p>
+          <hr class="border-black mt-3">
+        </div>
+
+        <div class="flex items-center justify-between gap-3 flex-wrap no-print">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base md:text-xl font-extrabold text-[#1E3631]">Sheet Pengeluaran & Jatuh Tempo</h2>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> SPS Real-Time
+              </span>
+            </div>
+            <p class="text-[11px] md:text-xs text-[#5B8780]">Terhubung langsung ke Google Spreadsheet via Apps Script.</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="printRekapBelanja()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5 active:scale-95">
+              <i class="fa-solid fa-print"></i>
+              <span>Cetak / PDF</span>
+            </button>
+
+            <button onclick="openRekapWaModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5 active:scale-95">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>Kirim via WA</span>
+            </button>
+
+            <button onclick="fetchFromRekapSps(true)" class="px-3 py-2 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate text-[#5B8780]"></i>
+              <span>Sinkron</span>
+            </button>
+
+            <button onclick="toggleRekapModal(true)" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-plus text-[10px]"></i> + Input Tagihan
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 no-print">
+          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]">
+            <span class="text-[10px] font-bold uppercase text-[#5B8780]">Total Keseluruhan</span>
+            <h3 class="text-lg md:text-2xl font-extrabold text-[#1E3631] mt-0.5" id="rekap-kpi-total">Rp 0</h3>
+          </div>
+          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-rose-400 bg-rose-50/40">
+            <span class="text-[10px] font-bold uppercase text-[#C04848]">Total Cicilan</span>
+            <h3 class="text-lg md:text-2xl font-extrabold text-[#C04848] mt-0.5" id="rekap-kpi-cicilan">Rp 0</h3>
+          </div>
+          <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-amber-500 bg-amber-50/40">
+            <span class="text-[10px] font-bold uppercase text-amber-700">Total Sisa (Belum Lunas)</span>
+            <h3 class="text-lg md:text-2xl font-extrabold text-amber-700 mt-0.5" id="rekap-kpi-sisa">Rp 0</h3>
+          </div>
+        </div>
+
+        <div class="banner-glass-card rounded-2xl overflow-hidden border border-white/80 shadow-md">
+          <div class="p-3.5 bg-[#bddbd4]/40 border-b border-white flex items-center justify-between no-print">
+            <h3 class="text-xs md:text-sm font-extrabold uppercase text-[#1E3631]">Tabel Pengeluaran & Tagihan</h3>
+            <span id="rekap-total-rows" class="text-[10px] font-bold bg-white/80 px-2.5 py-1 rounded-lg text-[#1E3631]">0 Baris</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs md:text-sm">
+              <thead>
+                <tr class="bg-[#BBD7CE] text-[#1E3631] text-[11px] font-black uppercase border-b-2 border-emerald-900/20">
+                  <th class="py-3 px-3 text-center w-12 border-r border-emerald-900/10">No</th>
+                  <th class="py-3 px-4 border-r border-emerald-900/10 min-w-[130px]">Tanggal Jatuh Tempo</th>
+                  <th class="py-3 px-4 border-r border-emerald-900/10 min-w-[170px]">Pengeluaran</th>
+                  <th class="py-3 px-4 border-r border-emerald-900/10 text-right min-w-[120px]">Harga</th>
+                  <th class="py-3 px-4 border-r border-emerald-900/10 min-w-[140px]">Catatan</th>
+                  <th class="py-3 px-4 border-r border-emerald-900/10 text-right min-w-[120px]">Total / Jenis</th>
+                  <th class="py-3 px-3 text-center min-w-[110px] no-print">Status & Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-table-body" class="divide-y divide-white/60">
+                <tr><td colspan="7" class="text-center py-10 text-xs text-[#5B8780]">Memuat data pengeluaran real-time...</td></tr>
+              </tbody>
+              <tfoot class="border-t-2 border-emerald-900/20 text-xs font-black">
+                <tr class="bg-[#BBD7CE]/90">
+                  <td colspan="3" class="py-2.5 px-4 text-center uppercase border-r border-emerald-900/10">TOTAL KESELURUHAN</td>
+                  <td class="py-2.5 px-4 text-right bg-[#f1a7a7]/80 text-[#851d1d] border-r border-emerald-900/10" id="foot-total-keseluruhan">Rp 0</td>
+                  <td class="py-2.5 px-4 text-center uppercase border-r border-emerald-900/10">TOTAL CICILAN</td>
+                  <td colspan="2" class="py-2.5 px-4 bg-[#f1a7a7]/80 text-[#851d1d] text-right" id="foot-total-cicilan">Rp 0</td>
+                </tr>
+                <tr class="bg-[#BBD7CE]/90 border-t border-emerald-900/10">
+                  <td colspan="3" class="py-2.5 px-4 text-center uppercase border-r border-emerald-900/10">TOTAL SISA</td>
+                  <td class="py-2.5 px-4 text-right bg-[#f1a7a7]/80 text-[#851d1d] border-r border-emerald-900/10" id="foot-total-sisa">Rp 0</td>
+                  <td colspan="3" class="py-2.5 px-4 text-[10px] text-[#5B8780] font-normal italic">*Sisa pengeluaran belum lunas</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
       </section>
     </main>
   </div>
 
-  <!-- ============================================================== -->
-  <!-- MODAL: KELOLA BANYAK PEMILIK                                   -->
-  <!-- ============================================================== -->
-  <div id="modal-manage-owners" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-white space-y-4">
+  <!-- MODAL: WA REKAP -->
+  <div id="modal-rekap-wa" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/70 pb-3">
+        <h3 class="text-sm md:text-base font-extrabold text-[#1E3631] flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i> Kirim Rekap ke WhatsApp
+        </h3>
+        <button onclick="toggleRekapWaModal(false)" class="text-[#5B8780] hover:text-rose-600 font-bold">✕</button>
+      </div>
+      <div>
+        <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nomor WhatsApp Tujuan (Opsional)</label>
+        <input type="text" id="rekap_wa_target_phone" placeholder="08123456789 atau kosongkan" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
+      </div>
+      <div>
+        <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Preview Teks WhatsApp</label>
+        <textarea id="rekap_wa_textarea" rows="10" class="w-full p-3 bg-white border border-white rounded-2xl text-xs font-mono text-slate-800 select-all leading-relaxed"></textarea>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <button onclick="copyRekapWaText()" type="button" class="py-2.5 bg-[#FAF5EB] hover:bg-white text-[#1E3631] border border-[#5B8780]/30 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+          <i class="fa-regular fa-copy"></i> Salin Teks
+        </button>
+        <button onclick="sendRekapWaDirect()" type="button" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 active:scale-95 shadow">
+          <i class="fa-brands fa-whatsapp text-sm"></i> Buka WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INPUT REKAP -->
+  <div id="modal-rekap" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl border border-white space-y-4">
       <div class="flex items-center justify-between border-b border-white/70 pb-3">
         <h3 class="text-sm font-extrabold text-[#1E3631] flex items-center gap-2">
-          <i class="fa-solid fa-users text-[#5B8780]"></i> Kelola Nama Pemilik
+          <i class="fa-solid fa-file-invoice text-emerald-700"></i> Catat Tagihan / Pengeluaran
         </h3>
-        <button onclick="toggleModal('modal-manage-owners', false)" class="text-[#5B8780] hover:text-rose-600 font-bold">✕</button>
+        <button onclick="toggleRekapModal(false)" class="text-[#5B8780] hover:text-rose-600 font-bold">✕</button>
       </div>
 
-      <div class="space-y-2">
-        <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Tambah Pemilik Baru</label>
-        <div class="flex gap-2">
-          <input type="text" id="new_owner_input" placeholder="Misal: Ibu, Tim, Adik" class="flex-1 px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
-          <button onclick="addNewOwner()" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-extrabold shadow transition active:scale-95">
-            + Tambah
-          </button>
+      <form id="rekap-item-form" class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tanggal Jatuh Tempo (Kolom A)</label>
+          <input type="date" id="r_tgl_tempo" required class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
         </div>
-      </div>
-
-      <div class="space-y-1.5 pt-2">
-        <label class="block text-[10px] font-bold text-[#5B8780] uppercase">Daftar Pemilik Saat Ini</label>
-        <div id="owners-manage-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+        <div>
+          <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pengeluaran / Nama Item (Kolom B)</label>
+          <input type="text" id="r_nama_pengeluaran" required placeholder="Contoh: Shopee PayLater, Listrik" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
         </div>
-      </div>
-
-      <button onclick="toggleModal('modal-manage-owners', false)" class="w-full py-2.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold shadow-sm transition">
-        Tutup
-      </button>
-    </div>
-  </div>
-
-  <!-- ============================================================== -->
-  <!-- MODAL: WHATSAPP INVOICE GENERATOR                              -->
-  <!-- ============================================================== -->
-  <div id="wa-invoice-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="banner-glass-card rounded-3xl p-5 md:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-white space-y-4">
-      
-      <div class="flex items-center justify-between border-b border-white/70 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-sm shadow">
-            <i class="fa-brands fa-whatsapp"></i>
-          </div>
-          <h2 class="text-base font-extrabold text-[#1E3631]">WhatsApp Invoice Generator</h2>
+        <div>
+          <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Harga (Nominal Rp) (Kolom C)</label>
+          <input type="text" id="r_harga" required inputmode="numeric" placeholder="0" class="currency-input w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-sm font-extrabold text-[#C04848]">
         </div>
-        <button onclick="toggleWaModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
-      </div>
-
-      <div>
-        <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Pilih Pesanan Customer</label>
-        <select id="wa_select_order" onchange="renderWaPreview()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:ring-2 focus:ring-[#5B8780]">
-        </select>
-      </div>
-
-      <div class="p-3.5 bg-white/60 rounded-2xl border border-white space-y-2.5">
-        <span class="text-[10px] font-extrabold text-[#5B8780] uppercase tracking-wider block">Rekening Tujuan Pembayaran</span>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div>
-            <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-0.5">E-Wallet / Bank</label>
-            <input type="text" id="wa_bank_name" value="ShopeePay" oninput="saveBankSettings(); renderWaPreview();" class="w-full px-2.5 py-1.5 bg-white rounded-xl text-xs font-semibold text-[#1E3631] border border-white">
-          </div>
-          <div>
-            <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-0.5">Nomor Shopee</label>
-            <input type="text" id="wa_bank_acc" value="0895333536524" oninput="saveBankSettings(); renderWaPreview();" class="w-full px-2.5 py-1.5 bg-white rounded-xl text-xs font-bold text-[#1E3631] border border-white">
-          </div>
-          <div>
-            <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-0.5">Atas Nama</label>
-            <input type="text" id="wa_bank_holder" value="MUHAMAD ILHAM JAYA KUSUMA" oninput="saveBankSettings(); renderWaPreview();" class="w-full px-2.5 py-1.5 bg-white rounded-xl text-xs font-semibold text-[#1E3631] border border-white">
-          </div>
+        <div>
+          <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Catatan (Kolom D)</label>
+          <input type="text" id="r_catatan" placeholder="Contoh: Cicilan ke-2 dari 6" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
         </div>
-      </div>
-
-      <div>
-        <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Preview Pesan WhatsApp</label>
-        <textarea id="wa_text_preview" rows="8" class="w-full p-3 bg-white/90 border border-white rounded-2xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-[#5B8780] leading-relaxed select-all"></textarea>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-        <button onclick="copyWaInvoice()" type="button" class="py-2.5 bg-[#FAF5EB] hover:bg-white text-[#1E3631] border border-[#5B8780]/30 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
-          <i class="fa-regular fa-copy"></i> 1-Click Salin Teks
-        </button>
-
-        <button onclick="sendWaDirect()" type="button" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition active:scale-95">
-          <i class="fa-brands fa-whatsapp text-sm"></i> Buka WhatsApp Langsung
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- MODAL JASTIP BARU -->
-  <div id="jastip-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="banner-glass-card rounded-3xl p-5 md:p-7 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
-      <div class="flex items-center justify-between mb-4 border-b border-white/60 pb-3">
-        <h2 class="text-base font-extrabold text-[#1E3631]">Order Baru Jastip</h2>
-        <button onclick="toggleJastipModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
-      </div>
-
-      <form id="jastip-form" class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nama Customer</label>
-            <input type="text" id="j_cust_name" required placeholder="Nama Cust" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Kontak WhatsApp (Nomor HP)</label>
-            <input type="text" id="j_cust_contact" placeholder="08123456789" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="sm:col-span-2">
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Barang & Varian</label>
-            <input type="text" id="j_item_name" required placeholder="Contoh: Sepatu Samba White Size 39" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Store / Toko</label>
-            <input type="text" id="j_store_name" placeholder="ABC Mart Shibuya" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
-          </div>
-        </div>
-
-        <div class="p-3.5 bg-white/60 rounded-2xl border border-white space-y-3">
-          <span class="text-[10px] font-extrabold text-[#5B8780] uppercase tracking-wider block">Kalkulator Tagihan Jastip</span>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-1">Harga Beli / Modal</label>
-              <input type="text" id="j_modal" inputmode="numeric" placeholder="0" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#C04848]">
-            </div>
-            <div>
-              <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-1">Fee Jastip</label>
-              <input type="text" id="j_fee" inputmode="numeric" placeholder="0" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#237059]">
-            </div>
-            <div>
-              <label class="block text-[9px] font-bold text-[#5B8780] uppercase mb-1">Ongkir / Packing</label>
-              <input type="text" id="j_ongkir" inputmode="numeric" placeholder="0" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#1E3631]">
-            </div>
-          </div>
-          <div class="pt-2 border-t border-white/80 flex items-center justify-between text-xs">
-            <span class="font-bold text-[#5B8780]">Total Tagihan:</span>
-            <span class="font-extrabold text-base text-[#1E3631]" id="calc_display_total">Rp 0</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Status Pembayaran</label>
-            <select id="j_pay_status" onchange="toggleDpField()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
-              <option value="lunas">Lunas (100%)</option>
-              <option value="dp">Bayar DP</option>
-              <option value="belum">Belum Bayar (Piutang)</option>
+            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe / Kolom E</label>
+            <select id="r_is_cicilan" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+              <option value="rutin">Pengeluaran Biasa</option>
+              <option value="cicilan">Cicilan</option>
             </select>
           </div>
-          <div id="dp_field_container" class="hidden">
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nominal DP (Rp)</label>
-            <input type="text" id="j_dp_amount" inputmode="numeric" placeholder="0" class="currency-input j-calc w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
-          </div>
           <div>
-            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Status Logistik</label>
-            <select id="j_logistics" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
-              <option value="Open PO">Open PO</option>
-              <option value="Sudah Dibeli">Sudah Dibeli</option>
-              <option value="Sedang Dikirim">Sedang Dikirim</option>
-              <option value="Selesai">Selesai</option>
+            <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Status Bayar</label>
+            <select id="r_status_lunas" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+              <option value="belum">Belum Lunas (Sisa)</option>
+              <option value="lunas">Sudah Lunas</option>
             </select>
           </div>
         </div>
-
-        <button type="submit" id="jastip-btn-submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition mt-2 flex items-center justify-center gap-2">
-          <span>Simpan Order Jastip</span>
+        <button type="submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-extrabold shadow transition active:scale-95 mt-2">
+          Simpan ke Rekap & Sinkron Real-Time
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- MODAL: KELOLA PEMILIK -->
+  <div id="modal-manage-owners" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/70 pb-3">
+        <h3 class="text-sm font-extrabold text-[#1E3631] flex items-center gap-2">Kelola Pemilik</h3>
+        <button onclick="toggleModal('modal-manage-owners', false)" class="text-[#5B8780] hover:text-rose-600 font-bold">✕</button>
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="new_owner_input" placeholder="Nama Pemilik" class="flex-1 px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+        <button onclick="addNewOwner()" class="px-3.5 py-2 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-extrabold shadow transition active:scale-95">+ Tambah</button>
+      </div>
+      <div id="owners-manage-list" class="max-h-48 overflow-y-auto space-y-1.5 pr-1"></div>
+      <button onclick="toggleModal('modal-manage-owners', false)" class="w-full py-2.5 bg-white/80 hover:bg-white text-[#1E3631] border border-white rounded-xl text-xs font-bold shadow-sm transition">Tutup</button>
+    </div>
+  </div>
+
+  <!-- MODAL: INVOICE JASTIP -->
+  <div id="wa-invoice-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-7 max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/70 pb-3">
+        <h2 class="text-base font-extrabold text-[#1E3631] flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i> Invoice Jastip
+        </h2>
+        <button onclick="toggleWaModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
+      </div>
+      <select id="wa_select_order" onchange="renderWaPreview()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]"></select>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <input type="text" id="wa_bank_name" value="ShopeePay" oninput="saveBankSettings(); renderWaPreview();" class="px-2.5 py-1.5 bg-white rounded-xl text-xs border border-white">
+        <input type="text" id="wa_bank_acc" value="0895333536524" oninput="saveBankSettings(); renderWaPreview();" class="px-2.5 py-1.5 bg-white rounded-xl text-xs border border-white">
+        <input type="text" id="wa_bank_holder" value="MUHAMAD ILHAM JAYA KUSUMA" oninput="saveBankSettings(); renderWaPreview();" class="px-2.5 py-1.5 bg-white rounded-xl text-xs border border-white">
+      </div>
+      <textarea id="wa_text_preview" rows="8" class="w-full p-3 bg-white/90 border border-white rounded-2xl text-xs font-mono text-slate-800 leading-relaxed select-all"></textarea>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <button onclick="copyWaInvoice()" type="button" class="py-2.5 bg-[#FAF5EB] hover:bg-white text-[#1E3631] border border-[#5B8780]/30 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2"><i class="fa-regular fa-copy"></i> Salin Teks</button>
+        <button onclick="sendWaDirect()" type="button" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-sm"></i> Buka WA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ORDER JASTIP BARU -->
+  <div id="jastip-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-7 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
+      <div class="flex items-center justify-between mb-4 border-b border-white/60 pb-3">
+        <h2 class="text-base font-extrabold text-[#1E3631]">Order Baru Jastip</h2>
+        <button onclick="toggleJastipModal(false)" class="text-[#5B8780] hover:text-[#C04848] text-lg font-bold">✕</button>
+      </div>
+      <form id="jastip-form" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="text" id="j_cust_name" required placeholder="Nama Cust" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+          <input type="text" id="j_cust_contact" placeholder="08123456789" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input type="text" id="j_item_name" required placeholder="Barang & Varian" class="sm:col-span-2 w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
+          <input type="text" id="j_store_name" placeholder="Store" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input type="text" id="j_modal" inputmode="numeric" placeholder="Modal" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#C04848]">
+          <input type="text" id="j_fee" inputmode="numeric" placeholder="Fee" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#237059]">
+          <input type="text" id="j_ongkir" inputmode="numeric" placeholder="Ongkir" class="currency-input j-calc w-full px-3 py-2 bg-white rounded-xl text-xs font-bold text-[#1E3631]">
+        </div>
+        <div class="flex items-center justify-between text-xs pt-1">
+          <span class="font-bold text-[#5B8780]">Total Tagihan:</span>
+          <span class="font-extrabold text-base text-[#1E3631]" id="calc_display_total">Rp 0</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <select id="j_pay_status" onchange="toggleDpField()" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
+            <option value="lunas">Lunas (100%)</option>
+            <option value="dp">Bayar DP</option>
+            <option value="belum">Belum Bayar</option>
+          </select>
+          <div id="dp_field_container" class="hidden">
+            <input type="text" id="j_dp_amount" inputmode="numeric" placeholder="Nominal DP" class="currency-input j-calc w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
+          </div>
+          <select id="j_logistics" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-semibold text-[#1E3631]">
+            <option value="Open PO">Open PO</option>
+            <option value="Sudah Dibeli">Sudah Dibeli</option>
+            <option value="Sedang Dikirim">Sedang Dikirim</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full py-3 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-sm font-bold shadow-md transition mt-2">Simpan Order</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
     const SPS_API_URL = 'https://script.google.com/macros/s/AKfycbwqm7EtNuVkZQUxGKiH99qAt1KGA1pAbBn-2ER_GUra3Ar5aw2Y4yEL2hQ651KoMGpW/exec';
+    const SPS_REKAP_URL = 'https://script.google.com/macros/s/AKfycbxRN9AvxOLftrzGwH2N8THzfqhaJU3lQylcNPc3jVyrf4mzIIc9Gq6ipy4qpOfUfiB2/exec';
 
     let kasTransactions = [];
     let jastipOrders = [];
+    let rekapBelanjaList = [];
+
     let barChart, donutChart;
     let currentJastipFilter = 'semua';
+    let currentMainTab = 'tab-kas';
 
     let ownersList = JSON.parse(localStorage.getItem('fm_owners_list')) || ['Ilham', 'Ayang'];
-
     const OWNER_COLORS = ['#0284c7', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#14b8a6', '#6366f1'];
     const OWNER_EMOJIS = ['👨', '👩', '👤', '⭐', '✨', '💼', '🏡', '🎯'];
 
@@ -696,26 +676,19 @@
 
     const todayISO = new Date().toISOString().split('T')[0];
     document.getElementById('kas_date').value = todayISO;
+    document.getElementById('r_tgl_tempo').value = todayISO;
 
-    const formattedDate = new Date().toLocaleDateString('id-ID', { 
-      day: 'numeric', month: 'short', year: 'numeric' 
-    });
+    const formattedDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
     document.getElementById('current-date').innerText = formattedDate;
     document.getElementById('splash-date').innerText = formattedDate;
 
-    // ==============================================================
-    // [EFEK BUKA & TUTUP - SINKRONISASI LATAR FULL SCREEN]
-    // ==============================================================
     function unlockDashboard() {
       const splash = document.getElementById('splash-screen');
       const mainApp = document.getElementById('main-app-container');
       const metaTheme = document.getElementById('theme-color-meta');
       if (!splash || splash.classList.contains('slide-up')) return;
 
-      // Geser layar ke atas
       splash.classList.add('slide-up');
-
-      // Ubah warna latar belakang & status bar iPhone ke warna dasbor
       document.body.style.backgroundColor = '#94B5B0';
       document.documentElement.style.backgroundColor = '#94B5B0';
       if (metaTheme) metaTheme.setAttribute('content', '#94B5B0');
@@ -736,7 +709,6 @@
       const metaTheme = document.getElementById('theme-color-meta');
       if (!splash) return;
 
-      // Kunci scroll, kembalikan warna gelap penuh tanpa celah
       document.body.classList.add('overflow-hidden');
       window.scrollTo(0, 0);
 
@@ -746,8 +718,7 @@
 
       mainApp.classList.add('opacity-0', 'pointer-events-none');
       splash.style.display = 'flex';
-      
-      void splash.offsetHeight; // Force reflow
+      void splash.offsetHeight;
       splash.classList.remove('slide-up');
     }
 
@@ -769,34 +740,283 @@
       document.getElementById(id).classList.toggle('hidden', !show);
     }
 
-    // KELOLA BANYAK PEMILIK
-    function openManageOwnersModal() {
-      renderOwnersManageList();
-      toggleModal('modal-manage-owners', true);
+    function updateSpsStatusUI(status, text) {
+      const dot = document.getElementById('sps-dot');
+      const label = document.getElementById('sps-status-text');
+
+      if (status === 'online') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow';
+        label.innerText = text || 'Real-Time On';
+      } else if (status === 'syncing') {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse-fast';
+        label.innerText = text || 'Sinkronisasi...';
+      } else {
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+        label.innerText = text || 'Offline';
+      }
     }
 
+    function refreshActiveTabSps() {
+      if (currentMainTab === 'tab-rekap') {
+        fetchFromRekapSps(true);
+      } else {
+        fetchFromSps(true);
+      }
+    }
+
+    function switchMainTab(tab) {
+      currentMainTab = tab;
+      const mKas = document.getElementById('module-kas');
+      const mJastip = document.getElementById('module-jastip');
+      const mRekap = document.getElementById('module-rekap');
+      const bKas = document.getElementById('nav-tab-kas');
+      const bJastip = document.getElementById('nav-tab-jastip');
+      const bRekap = document.getElementById('nav-tab-rekap');
+
+      [mKas, mJastip, mRekap].forEach(el => el.classList.add('hidden'));
+      [bKas, bJastip, bRekap].forEach(el => el.classList.remove('active'));
+
+      if (tab === 'tab-kas') {
+        mKas.classList.remove('hidden');
+        bKas.classList.add('active');
+        if(barChart) barChart.resize();
+        if(donutChart) donutChart.resize();
+      } else if (tab === 'tab-jastip') {
+        mJastip.classList.remove('hidden');
+        bJastip.classList.add('active');
+      } else if (tab === 'tab-rekap') {
+        mRekap.classList.remove('hidden');
+        bRekap.classList.add('active');
+        renderRekapTable();
+        fetchFromRekapSps(false);
+      }
+    }
+
+    // ================= REKAP BELANJA & WA =================
+    function toggleRekapModal(show) { document.getElementById('modal-rekap').classList.toggle('hidden', !show); }
+    function toggleRekapWaModal(show) { document.getElementById('modal-rekap-wa').classList.toggle('hidden', !show); }
+
+    function printRekapBelanja() {
+      document.getElementById('print-date-display').innerText = `Dicetak pada: ${new Date().toLocaleString('id-ID')}`;
+      window.print();
+    }
+
+    function openRekapWaModal() {
+      if (rekapBelanjaList.length === 0) return alert("Belum ada data rekap belanja!");
+      let totalKeseluruhan = 0, totalCicilan = 0, totalSisa = 0;
+      let itemsText = "";
+
+      rekapBelanjaList.forEach((item, idx) => {
+        const val = Number(item.harga) || 0;
+        totalKeseluruhan += val;
+        if (item.totalJenis === 'cicilan') totalCicilan += val;
+        if (item.statusLunas !== 'lunas') totalSisa += val;
+
+        const iconStatus = item.statusLunas === 'lunas' ? '✅ Lunas' : '⏳ Sisa';
+        const jenis = item.totalJenis === 'cicilan' ? '[Cicilan]' : '[Rutin]';
+
+        itemsText += `${idx + 1}. *${item.pengeluaran}* ${jenis}\n` +
+                     `   • Tgl Tempo: ${item.tglTempo || '-'}\n` +
+                     `   • Nominal: *${formatRupiah(val)}*\n` +
+                     `   • Catatan: ${item.catatan || '-'}\n` +
+                     `   • Status: ${iconStatus}\n\n`;
+      });
+
+      const message = 
+`📋 *REKAP PENGELUARAN & TAGIHAN BELANJA*
+🗓️ Tanggal: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}
+──────────────────────────
+
+${itemsText.trim()}
+
+──────────────────────────
+💰 *TOTAL KESELURUHAN : ${formatRupiah(totalKeseluruhan)}*
+💳 *TOTAL CICILAN     : ${formatRupiah(totalCicilan)}*
+⚠️ *TOTAL SISA BAYAR  : ${formatRupiah(totalSisa)}*
+
+_Data sinkron real-time dari Google Spreadsheet._`;
+
+      document.getElementById('rekap_wa_textarea').value = message;
+      toggleRekapWaModal(true);
+    }
+
+    function copyRekapWaText() {
+      const textarea = document.getElementById('rekap_wa_textarea');
+      textarea.select();
+      navigator.clipboard.writeText(textarea.value).then(() => alert("✅ Teks berhasil disalin!"));
+    }
+
+    function sendRekapWaDirect() {
+      const rawPhone = document.getElementById('rekap_wa_target_phone').value.trim();
+      let phone = rawPhone.replace(/\D/g, '');
+      if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+      const text = encodeURIComponent(document.getElementById('rekap_wa_textarea').value);
+      window.open(phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`, '_blank');
+    }
+
+    async function fetchFromRekapSps(isManual = false) {
+      if (isManual) updateSpsStatusUI('syncing', 'Memuat Rekap...');
+      try {
+        const resp = await fetch(`${SPS_REKAP_URL}?action=getRekap`);
+        const json = await resp.json();
+        const rawList = Array.isArray(json) ? json : (json.data || json.rekap || []);
+
+        if (rawList && rawList.length > 0) {
+          rekapBelanjaList = rawList.map((item, i) => ({
+            id: item.id || Date.now() + i,
+            tglTempo: item.tglTempo || item.tanggal || item[0] || '',
+            pengeluaran: item.pengeluaran || item.nama || item[1] || '',
+            harga: Number(item.harga || item.nominal || item[2]) || 0,
+            catatan: item.catatan || item.keterangan || item[3] || '',
+            totalJenis: (item.totalJenis || item.jenis || item[4] || '').toLowerCase().includes('cicil') ? 'cicilan' : 'rutin',
+            statusLunas: item.statusLunas || 'belum'
+          }));
+
+          saveLocalBackup();
+          renderRekapTable();
+          updateSpsStatusUI('online', 'Real-Time On');
+          if (isManual) alert("✅ Data pengeluaran berhasil diperbarui!");
+        } else if (json.status === 'success') {
+          updateSpsStatusUI('online', 'Real-Time On');
+        }
+      } catch (err) {
+        console.warn('Gagal fetch rekap SPS:', err);
+        updateSpsStatusUI('offline', 'Koneksi Offline');
+      }
+    }
+
+    async function syncRekapItemToSps(item) {
+      updateSpsStatusUI('syncing', 'Menyimpan...');
+      try {
+        await fetch(SPS_REKAP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'addRekap', data: item })
+        });
+        setTimeout(() => {
+          updateSpsStatusUI('online', 'Tersimpan Real-Time');
+          fetchFromRekapSps(false);
+        }, 1200);
+      } catch (e) {
+        console.error(e);
+        updateSpsStatusUI('offline', 'Gagal Kirim');
+      }
+    }
+
+    document.getElementById('rekap-item-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const tglTempo = document.getElementById('r_tgl_tempo').value || todayISO;
+      const pengeluaran = document.getElementById('r_nama_pengeluaran').value.trim();
+      const harga = parseFloat(document.getElementById('r_harga').value.replace(/\./g, '')) || 0;
+      const catatan = document.getElementById('r_catatan').value.trim() || '-';
+      const totalJenis = document.getElementById('r_is_cicilan').value;
+      const statusLunas = document.getElementById('r_status_lunas').value;
+
+      if (harga <= 0) return alert("Nominal harus lebih dari 0!");
+
+      const newItem = { id: Date.now(), tglTempo, pengeluaran, harga, catatan, totalJenis, statusLunas };
+      rekapBelanjaList.push(newItem);
+      saveLocalBackup();
+      renderRekapTable();
+
+      this.reset();
+      document.getElementById('r_tgl_tempo').value = todayISO;
+      toggleRekapModal(false);
+      syncRekapItemToSps(newItem);
+      alert("✅ Pengeluaran berhasil disimpan & disinkronkan ke Spreadsheet!");
+    });
+
+    function toggleLunasRekap(id) {
+      const item = rekapBelanjaList.find(x => x.id === id);
+      if (item) {
+        item.statusLunas = (item.statusLunas === 'lunas') ? 'belum' : 'lunas';
+        saveLocalBackup();
+        renderRekapTable();
+      }
+    }
+
+    function deleteRekapItem(id) {
+      if (confirm("Hapus baris pengeluaran ini?")) {
+        rekapBelanjaList = rekapBelanjaList.filter(x => x.id !== id);
+        saveLocalBackup();
+        renderRekapTable();
+      }
+    }
+
+    function renderRekapTable() {
+      const tbody = document.getElementById('rekap-table-body');
+      let totalKeseluruhan = 0, totalCicilan = 0, totalSisa = 0;
+
+      rekapBelanjaList.forEach(item => {
+        const val = Number(item.harga) || 0;
+        totalKeseluruhan += val;
+        if (item.totalJenis === 'cicilan') totalCicilan += val;
+        if (item.statusLunas !== 'lunas') totalSisa += val;
+      });
+
+      document.getElementById('rekap-kpi-total').innerText = formatRupiah(totalKeseluruhan);
+      document.getElementById('rekap-kpi-cicilan').innerText = formatRupiah(totalCicilan);
+      document.getElementById('rekap-kpi-sisa').innerText = formatRupiah(totalSisa);
+      document.getElementById('rekap-total-rows').innerText = `${rekapBelanjaList.length} Baris`;
+
+      document.getElementById('foot-total-keseluruhan').innerText = formatRupiah(totalKeseluruhan);
+      document.getElementById('foot-total-cicilan').innerText = formatRupiah(totalCicilan);
+      document.getElementById('foot-total-sisa').innerText = formatRupiah(totalSisa);
+
+      if (!rekapBelanjaList.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-xs text-[#5B8780]">Belum ada item rekap belanja. Klik <b>+ Input Tagihan</b> untuk mencatat data.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rekapBelanjaList.map((item, idx) => {
+        const isCicil = item.totalJenis === 'cicilan';
+        const isLunas = item.statusLunas === 'lunas';
+
+        return `
+          <tr class="hover:bg-white/50 transition">
+            <td class="py-2.5 px-3 text-center font-bold text-gray-500 border-r border-white/60">${idx + 1}</td>
+            <td class="py-2.5 px-4 font-semibold text-[#1E3631] border-r border-white/60 whitespace-nowrap">
+              <i class="fa-regular fa-clock text-rose-500 text-[10px] mr-1 no-print"></i> ${item.tglTempo || '-'}
+            </td>
+            <td class="py-2.5 px-4 font-extrabold text-[#1E3631] border-r border-white/60">${item.pengeluaran}</td>
+            <td class="py-2.5 px-4 text-right font-extrabold text-[#C04848] border-r border-white/60">${formatRupiah(item.harga)}</td>
+            <td class="py-2.5 px-4 text-[#5B8780] font-medium border-r border-white/60 text-xs">${item.catatan || '-'}</td>
+            <td class="py-2.5 px-4 text-right border-r border-white/60">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${isCicil ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800'}">
+                ${isCicil ? 'Cicilan' : 'Rutin'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 text-center no-print">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="toggleLunasRekap(${item.id})" class="px-2 py-1 rounded text-[10px] font-bold ${isLunas ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300'}">
+                  ${isLunas ? '✓ Lunas' : 'Sisa'}
+                </button>
+                <button onclick="deleteRekapItem(${item.id})" class="text-[#5B8780] hover:text-rose-600 p-1"><i class="fa-regular fa-trash-can"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ================= KAS & OWNERS =================
+    function openManageOwnersModal() { renderOwnersManageList(); toggleModal('modal-manage-owners', true); }
     function addNewOwner() {
       const input = document.getElementById('new_owner_input');
       const name = input.value.trim();
-      if (!name) return alert("Masukkan nama pemilik!");
-      if (ownersList.some(o => o.toLowerCase() === name.toLowerCase())) {
-        return alert("Nama pemilik sudah ada!");
-      }
-
+      if (!name) return alert("Masukkan nama!");
+      if (ownersList.some(o => o.toLowerCase() === name.toLowerCase())) return alert("Nama sudah ada!");
       ownersList.push(name);
       saveOwnersList();
       input.value = '';
       renderOwnersManageList();
       applyDynamicOwnersUI();
       updateKasDashboard();
-      alert(`✅ Berhasil menambahkan pemilik: ${name}`);
     }
-
     function removeOwner(name) {
-      if (ownersList.length <= 1) {
-        return alert("Minimal harus ada 1 pemilik!");
-      }
-      if (confirm(`Hapus "${name}" dari daftar pemilik? (Catatan kas yang sudah ada tidak akan hilang)`)) {
+      if (ownersList.length <= 1) return alert("Minimal 1 pemilik!");
+      if (confirm(`Hapus "${name}"?`)) {
         ownersList = ownersList.filter(o => o !== name);
         saveOwnersList();
         renderOwnersManageList();
@@ -804,48 +1024,28 @@
         updateKasDashboard();
       }
     }
-
-    function saveOwnersList() {
-      localStorage.setItem('fm_owners_list', JSON.stringify(ownersList));
-    }
-
+    function saveOwnersList() { localStorage.setItem('fm_owners_list', JSON.stringify(ownersList)); }
     function renderOwnersManageList() {
-      const listEl = document.getElementById('owners-manage-list');
-      listEl.innerHTML = ownersList.map((name, i) => `
+      document.getElementById('owners-manage-list').innerHTML = ownersList.map((name, i) => `
         <div class="flex items-center justify-between p-2 bg-white/70 rounded-xl border border-white text-xs font-bold text-[#1E3631]">
-          <span class="flex items-center gap-1.5">
-            <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]}</span>
-            <span>${name}</span>
-          </span>
-          <button onclick="removeOwner('${name}')" class="text-[#5B8780] hover:text-rose-600 transition p-1">
-            <i class="fa-regular fa-trash-can"></i>
-          </button>
+          <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</span>
+          <button onclick="removeOwner('${name}')" class="text-[#5B8780] hover:text-rose-600 p-1"><i class="fa-regular fa-trash-can"></i></button>
         </div>
       `).join('');
     }
-
     function applyDynamicOwnersUI() {
-      const splashContainer = document.getElementById('splash-owners-container');
-      splashContainer.innerHTML = ownersList.map((name, i) => `
-        <span class="px-2 py-0.5 rounded-full bg-white/10 text-[11px]">
-          ${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}
-        </span>
+      document.getElementById('splash-owners-container').innerHTML = ownersList.map((name, i) => `
+        <span class="px-2 py-0.5 rounded-full bg-white/10 text-[11px]">${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</span>
       `).join('');
-
       const selectFilter = document.getElementById('select-owner-filter');
-      selectFilter.innerHTML = `
-        <option value="semua">Semua Pemilik</option>
-        ${ownersList.map((name, i) => `<option value="${name}">${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</option>`).join('')}
-      `;
+      selectFilter.innerHTML = `<option value="semua">Semua Pemilik</option>${ownersList.map((name, i) => `<option value="${name}">${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</option>`).join('')}`;
       selectFilter.value = currentOwnerFilter;
 
-      const formRadios = document.getElementById('form-owner-radios');
-      formRadios.innerHTML = ownersList.map((name, i) => `
+      document.getElementById('form-owner-radios').innerHTML = ownersList.map((name, i) => `
         <label class="cursor-pointer">
           <input type="radio" name="kas_owner" value="${name}" class="peer sr-only" ${i === 0 ? 'checked' : ''}>
           <div class="text-center py-2 px-1.5 rounded-lg text-xs font-bold text-[#5B8780] peer-checked:bg-[#5B8780] peer-checked:text-white transition flex items-center justify-center gap-1 truncate">
-            <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]}</span>
-            <span class="truncate">${name.toUpperCase()}</span>
+            <span>${OWNER_EMOJIS[i % OWNER_EMOJIS.length]}</span><span class="truncate">${name.toUpperCase()}</span>
           </div>
         </label>
       `).join('');
@@ -855,191 +1055,63 @@
         barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
         barChart.update();
       }
-
       updateFilterSummaryBadge();
     }
-
-    // FILTER MINIMALIS
     function toggleFilterDrawer() {
       const panel = document.getElementById('filter-drawer-panel');
-      const chevron = document.getElementById('filter-chevron');
       const isHidden = panel.classList.contains('hidden');
-
       panel.classList.toggle('hidden', !isHidden);
-      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      document.getElementById('filter-chevron').style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     }
-
-    function onSelectTimeChange(val) {
-      currentTimeFilter = val;
-      const labelMap = {
-        'hari_ini': 'Hari Ini',
-        'minggu_ini': 'Minggu Ini',
-        'bulan_ini': 'Bulan Ini',
-        'semua': 'Semua Waktu'
-      };
-      document.getElementById('badge-period-income').innerText = labelMap[val];
-      document.getElementById('badge-period-expense').innerText = labelMap[val];
-      updateFilterSummaryBadge();
-      updateKasDashboard();
-    }
-
-    function onSelectOwnerChange(val) {
-      currentOwnerFilter = val;
-      updateFilterSummaryBadge();
-      updateKasDashboard();
-    }
-
+    function onSelectTimeChange(val) { currentTimeFilter = val; updateFilterSummaryBadge(); updateKasDashboard(); }
+    function onSelectOwnerChange(val) { currentOwnerFilter = val; updateFilterSummaryBadge(); updateKasDashboard(); }
     function updateFilterSummaryBadge() {
-      const timeMap = {
-        'hari_ini': 'Hari Ini',
-        'minggu_ini': 'Minggu Ini',
-        'bulan_ini': 'Bulan Ini',
-        'semua': 'Semua Periode'
-      };
-
-      let ownerText = currentOwnerFilter === 'semua' ? 'Semua Pemilik' : currentOwnerFilter;
-      document.getElementById('badge-filter-summary').innerText = `📅 ${timeMap[currentTimeFilter]} • 👤 ${ownerText}`;
+      const timeMap = { 'hari_ini': 'Hari Ini', 'minggu_ini': 'Minggu Ini', 'bulan_ini': 'Bulan Ini', 'semua': 'Semua Periode' };
+      document.getElementById('badge-filter-summary').innerText = `📅 ${timeMap[currentTimeFilter]} • 👤 ${currentOwnerFilter === 'semua' ? 'Semua Pemilik' : currentOwnerFilter}`;
     }
-
     function isDateInPeriod(dateStr, period) {
-      if (period === 'semua') return true;
-      if (!dateStr) return true;
-
-      const date = new Date(dateStr);
-      const now = new Date();
-
-      if (period === 'hari_ini') {
-        return date.toISOString().split('T')[0] === now.toISOString().split('T')[0];
-      }
-
-      if (period === 'minggu_ini') {
-        const diffTime = Math.abs(now - date);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays <= 7;
-      }
-
-      if (period === 'bulan_ini') {
-        return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
-      }
-
+      if (period === 'semua' || !dateStr) return true;
+      const date = new Date(dateStr), now = new Date();
+      if (period === 'hari_ini') return date.toISOString().split('T')[0] === now.toISOString().split('T')[0];
+      if (period === 'minggu_ini') return Math.ceil(Math.abs(now - date) / 86400000) <= 7;
+      if (period === 'bulan_ini') return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
       return true;
     }
 
-    // KONEKSI SPS
-    function updateSpsStatusUI(status, text) {
-      const dot = document.getElementById('sps-dot');
-      const label = document.getElementById('sps-status-text');
-
-      if (status === 'online') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow';
-        label.innerText = text || 'SPS Terhubung';
-      } else if (status === 'syncing') {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse-fast';
-        label.innerText = text || 'Sinkronisasi...';
-      } else {
-        dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
-        label.innerText = text || 'SPS Offline';
-      }
-    }
-
     async function fetchFromSps(isManual = false) {
-      updateSpsStatusUI('syncing', 'Memuat data...');
+      updateSpsStatusUI('syncing', 'Memuat SPS Kas...');
       try {
         const resp = await fetch(`${SPS_API_URL}?action=getData`);
         const json = await resp.json();
         if (json.status === 'success') {
-          if (json.kas) {
-            kasTransactions = json.kas.map(t => {
-              let owner = t.owner;
-              let desc = t.desc || '';
-              
-              const tagMatch = desc.match(/^\[(.*?)\]/);
-              if (tagMatch) {
-                owner = tagMatch[1];
-                desc = desc.replace(/^\[.*?\]\s*/, '').trim();
-              }
-              if (!owner) owner = ownersList[0] || 'Umum';
-
-              if (!ownersList.includes(owner)) {
-                ownersList.push(owner);
-                saveOwnersList();
-              }
-
-              return {
-                ...t,
-                desc,
-                owner,
-                date: t.date || (t.time && t.time.includes('-') ? t.time.split(' ')[0] : todayISO)
-              };
-            });
-          }
+          if (json.kas) kasTransactions = json.kas;
           if (json.jastip) jastipOrders = json.jastip;
-
           saveLocalBackup();
-          applyDynamicOwnersUI();
           updateKasDashboard();
           updateJastipModule();
-          updateSpsStatusUI('online', 'SPS Terhubung');
-          if (isManual) alert("✅ Data berhasil disinkronkan dari Google Spreadsheet!");
+          updateSpsStatusUI('online', 'Real-Time On');
         }
-      } catch (err) {
-        console.warn('Gagal ambil data SPS, memuat cache lokal:', err);
-        updateSpsStatusUI('offline', 'Koneksi Lemah');
-      }
+      } catch (err) { updateSpsStatusUI('offline', 'Koneksi Lemah'); }
     }
 
     async function syncToSps(action, data) {
-      updateSpsStatusUI('syncing', 'Menyimpan ke SPS...');
       try {
-        await fetch(SPS_API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, data })
-        });
-        setTimeout(() => updateSpsStatusUI('online', 'SPS Terhubung'), 800);
+        await fetch(SPS_API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, data }) });
         return true;
-      } catch (err) {
-        console.error('Error post to SPS:', err);
-        updateSpsStatusUI('offline', 'Gagal Kirim');
-        return false;
-      }
+      } catch (err) { return false; }
     }
 
     function saveLocalBackup() {
       localStorage.setItem('fm_kas_cache', JSON.stringify(kasTransactions));
       localStorage.setItem('fm_jastip_cache', JSON.stringify(jastipOrders));
+      localStorage.setItem('fm_rekap_cache', JSON.stringify(rekapBelanjaList));
     }
-
     function loadLocalBackup() {
-      const k = localStorage.getItem('fm_kas_cache');
-      const j = localStorage.getItem('fm_jastip_cache');
+      const k = localStorage.getItem('fm_kas_cache'), j = localStorage.getItem('fm_jastip_cache'), r = localStorage.getItem('fm_rekap_cache');
       if (k) kasTransactions = JSON.parse(k);
       if (j) jastipOrders = JSON.parse(j);
+      if (r) rekapBelanjaList = JSON.parse(r);
     }
-
-    // KAS LOGIC
-    function switchMainTab(tab) {
-      const mKas = document.getElementById('module-kas');
-      const mJastip = document.getElementById('module-jastip');
-      const bKas = document.getElementById('nav-tab-kas');
-      const bJastip = document.getElementById('nav-tab-jastip');
-
-      if (tab === 'tab-kas') {
-        mKas.classList.remove('hidden');
-        mJastip.classList.add('hidden');
-        bKas.classList.add('active');
-        bJastip.classList.remove('active');
-        if(barChart) barChart.resize();
-        if(donutChart) donutChart.resize();
-      } else {
-        mKas.classList.add('hidden');
-        mJastip.classList.remove('hidden');
-        bKas.classList.remove('active');
-        bJastip.classList.add('active');
-      }
-    }
-
     function switchKasView(view) {
       ['kas-dash', 'kas-form', 'kas-log'].forEach(v => {
         document.getElementById(`view-${v}`).classList.add('hidden');
@@ -1047,10 +1119,6 @@
       });
       document.getElementById(`view-${view}`).classList.remove('hidden');
       document.getElementById(`sub-${view}`).classList.add('active');
-      if (view === 'kas-dash') {
-        if(barChart) barChart.resize();
-        if(donutChart) donutChart.resize();
-      }
     }
 
     document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
@@ -1064,102 +1132,46 @@
       const desc = document.getElementById('kas_desc').value.trim() || category;
       const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-      if (amount <= 0) return alert("Nominal harus lebih dari 0!");
+      if (amount <= 0) return alert("Nominal harus > 0");
 
-      const newEntry = { 
-        id: Date.now(), 
-        date, 
-        time: `${date} ${time}`, 
-        type, 
-        amount, 
-        category, 
-        desc, 
-        owner 
-      };
-
+      const newEntry = { id: Date.now(), date, time: `${date} ${time}`, type, amount, category, desc, owner };
       kasTransactions.unshift(newEntry);
-      
       saveLocalBackup();
       updateKasDashboard();
       this.reset();
       document.getElementById('kas_date').value = todayISO;
-      document.getElementById('kas_amount').value = '';
-
-      syncToSps('addKas', {
-        ...newEntry,
-        desc: `[${owner}] ${desc}`
-      });
-
-      alert(`✅ Transaksi milik ${owner} berhasil disimpan!`);
+      syncToSps('addKas', { ...newEntry, desc: `[${owner}] ${desc}` });
       switchKasView('kas-dash');
     });
 
-    async function deleteKas(id) {
-      if(confirm("Hapus catatan transaksi kas ini?")) {
-        kasTransactions = kasTransactions.filter(k => k.id !== id);
-        saveLocalBackup();
-        updateKasDashboard();
-        syncToSps('deleteKas', { id });
-      }
-    }
-
     function updateKasDashboard() {
-      const filtered = kasTransactions.filter(t => {
-        const matchPeriod = isDateInPeriod(t.date, currentTimeFilter);
-        const matchOwner = currentOwnerFilter === 'semua' || t.owner === currentOwnerFilter;
-        return matchPeriod && matchOwner;
-      });
-
-      let inc = 0, exp = 0, catMap = {};
-      let ownerExpMap = {};
+      const filtered = kasTransactions.filter(t => isDateInPeriod(t.date, currentTimeFilter) && (currentOwnerFilter === 'semua' || t.owner === currentOwnerFilter));
+      let inc = 0, exp = 0, catMap = {}, ownerExpMap = {};
       ownersList.forEach(o => ownerExpMap[o] = 0);
 
       filtered.forEach(t => {
-        if (t.type === 'pemasukan') {
-          inc += t.amount;
-        } else {
+        if (t.type === 'pemasukan') inc += t.amount;
+        else {
           exp += t.amount;
           catMap[t.category] = (catMap[t.category] || 0) + t.amount;
-
-          if (ownerExpMap[t.owner] !== undefined) {
-            ownerExpMap[t.owner] += t.amount;
-          } else {
-            ownerExpMap[t.owner] = t.amount;
-          }
+          ownerExpMap[t.owner] = (ownerExpMap[t.owner] || 0) + t.amount;
         }
       });
 
-      const bal = inc - exp;
-      let totalAllOwnerExp = Object.values(ownerExpMap).reduce((a, b) => a + b, 0);
-
       document.getElementById('kpi-income').innerText = formatRupiah(inc);
       document.getElementById('kpi-expense').innerText = formatRupiah(exp);
-      document.getElementById('kpi-balance').innerText = formatRupiah(bal);
-      document.getElementById('kas-count').innerText = `${filtered.length} Data (${kasTransactions.length} Total)`;
+      document.getElementById('kpi-balance').innerText = formatRupiah(inc - exp);
+      document.getElementById('kas-count').innerText = `${filtered.length} Data`;
 
-      const cardsContainer = document.getElementById('dynamic-owner-cards-container');
-      cardsContainer.innerHTML = ownersList.map((name, i) => {
-        const userExp = ownerExpMap[name] || 0;
-        const pct = totalAllOwnerExp > 0 ? Math.round((userExp / totalAllOwnerExp) * 100) : 0;
-        const color = OWNER_COLORS[i % OWNER_COLORS.length];
-        const emoji = OWNER_EMOJIS[i % OWNER_EMOJIS.length];
-
-        return `
-          <div class="banner-glass-card rounded-2xl p-3.5 md:p-4 border-l-4 shadow-sm" style="border-left-color: ${color}">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-[#1E3631] uppercase tracking-wider flex items-center gap-1 truncate">
-                <span>${emoji}</span> <span class="truncate">${name}</span>
-              </span>
-              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/60 text-[#1E3631]">${pct}%</span>
-            </div>
-            <h3 class="text-base md:text-lg font-extrabold text-[#1E3631] mt-1">${formatRupiah(userExp)}</h3>
-          </div>
-        `;
-      }).join('');
+      document.getElementById('dynamic-owner-cards-container').innerHTML = ownersList.map((name, i) => `
+        <div class="banner-glass-card rounded-2xl p-3.5 border-l-4" style="border-left-color: ${OWNER_COLORS[i % OWNER_COLORS.length]}">
+          <span class="text-xs font-bold text-[#1E3631]">${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}</span>
+          <h3 class="text-base font-extrabold text-[#1E3631] mt-1">${formatRupiah(ownerExpMap[name] || 0)}</h3>
+        </div>
+      `).join('');
 
       barChart.data.labels = ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`);
       barChart.data.datasets[0].data = ownersList.map(name => ownerExpMap[name] || 0);
-      barChart.data.datasets[0].backgroundColor = ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]);
       barChart.update();
 
       const cLabels = Object.keys(catMap);
@@ -1168,128 +1180,47 @@
       document.getElementById('donut-empty-msg').style.display = cLabels.length ? 'none' : 'block';
       donutChart.update();
 
-      const tbody = document.getElementById('kas-table-body');
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-xs text-[#5B8780]">Tidak ada transaksi untuk filter ini.</td></tr>`;
-        return;
+      document.getElementById('kas-table-body').innerHTML = filtered.map(t => `
+        <tr class="hover:bg-white/40">
+          <td class="py-3 px-4">${t.date}</td>
+          <td class="py-3 px-4">${t.owner}</td>
+          <td class="py-3 px-4"><b>${t.desc}</b></td>
+          <td class="py-3 px-4 text-right font-extrabold ${t.type === 'pemasukan' ? 'text-[#237059]' : 'text-[#C04848]'}">${formatRupiah(t.amount)}</td>
+          <td class="py-3 px-4 text-center"><button onclick="deleteKas(${t.id})" class="text-[#5B8780] hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button></td>
+        </tr>
+      `).join('');
+    }
+
+    function deleteKas(id) {
+      if (confirm("Hapus transaksi?")) {
+        kasTransactions = kasTransactions.filter(k => k.id !== id);
+        saveLocalBackup();
+        updateKasDashboard();
+        syncToSps('deleteKas', { id });
       }
-
-      tbody.innerHTML = filtered.map(t => {
-        const ownerIndex = ownersList.indexOf(t.owner);
-        const emoji = ownerIndex >= 0 ? OWNER_EMOJIS[ownerIndex % OWNER_EMOJIS.length] : '👤';
-
-        return `
-          <tr class="hover:bg-white/40">
-            <td class="py-3 px-4 text-[#5B8780] font-semibold text-xs">
-              ${t.date || '-'}<br><span class="text-[10px] text-gray-500">${t.time || ''}</span>
-            </td>
-            <td class="py-3 px-4">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-white/70 text-[#1E3631] border border-white">
-                <span>${emoji}</span> <span>${(t.owner || 'Umum').toUpperCase()}</span>
-              </span>
-            </td>
-            <td class="py-3 px-4">
-              <span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold ${t.type === 'pemasukan' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${t.category}</span>
-              <p class="font-bold text-[#1E3631] mt-0.5">${t.desc}</p>
-            </td>
-            <td class="py-3 px-4 text-right font-extrabold ${t.type === 'pemasukan' ? 'text-[#237059]' : 'text-[#C04848]'}">
-              ${t.type === 'pemasukan' ? '+' : '-'} ${formatRupiah(t.amount)}
-            </td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="deleteKas(${t.id})" class="text-[#5B8780]/60 hover:text-rose-600 transition"><i class="fa-regular fa-trash-can"></i></button>
-            </td>
-          </tr>
-        `;
-      }).join('');
     }
 
-    // OCR SCAN
-    function triggerReceiptScan() {
-      switchMainTab('tab-kas');
-      switchKasView('kas-form');
-      document.getElementById('receipt-camera-file').click();
-    }
-
+    function triggerReceiptScan() { switchMainTab('tab-kas'); switchKasView('kas-form'); document.getElementById('receipt-camera-file').click(); }
     async function handleReceiptFile(input) {
       if (!input.files || !input.files[0]) return;
-      const file = input.files[0];
-
-      const loader = document.getElementById('ocr-loader');
-      const statusText = document.getElementById('ocr-status-text');
-      loader.classList.remove('hidden');
-      statusText.innerText = "Memproses foto nota dengan AI...";
-
+      document.getElementById('ocr-loader').classList.remove('hidden');
       try {
-        const result = await Tesseract.recognize(file, 'eng', {
-          logger: m => {
-            if (m.status === 'recognizing text') {
-              statusText.innerText = `Sedang membaca nota: ${Math.round(m.progress * 100)}%`;
-            }
-          }
-        });
-
-        const rawText = result.data.text;
-        const detectedAmount = parseReceiptAmount(rawText);
-
-        if (detectedAmount > 0) {
-          document.getElementById('kas_amount').value = detectedAmount.toLocaleString('id-ID');
-          document.getElementById('type_pengeluaran').checked = true;
-
-          const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-          if (lines.length > 0) {
-            document.getElementById('kas_desc').value = 'Nota: ' + lines[0].substring(0, 30);
-          }
-
-          alert(`🎉 Nota Terbaca!\nNominal otomatis diisi: ${formatRupiah(detectedAmount)}`);
-        } else {
-          alert("⚠️ Angka total nota tidak terbaca jelas. Silakan masukkan nominal manual.");
-        }
-
-      } catch (err) {
-        console.error(err);
-        alert("Kendala saat memproses gambar.");
-      } finally {
-        loader.classList.add('hidden');
-        input.value = '';
-      }
+        const result = await Tesseract.recognize(input.files[0], 'eng');
+        const num = parseReceiptAmount(result.data.text);
+        if (num > 0) document.getElementById('kas_amount').value = num.toLocaleString('id-ID');
+      } catch (e) { alert("Gagal memproses struk"); }
+      document.getElementById('ocr-loader').classList.add('hidden');
     }
-
     function parseReceiptAmount(text) {
-      const lines = text.toUpperCase().split('\n');
-      let candidateAmounts = [];
-      const keywords = ['TOTAL', 'JUMLAH', 'TAGIHAN', 'RP', 'BAYAR', 'HARGA', 'NETT', 'SUBTOTAL'];
-
-      for (let line of lines) {
-        if (keywords.some(k => line.includes(k))) {
-          let numbers = line.match(/\d+([.,]\d+)?/g);
-          if (numbers) {
-            numbers.forEach(n => {
-              let cleanNum = parseInt(n.replace(/[.,]/g, ''), 10);
-              if (cleanNum >= 1000 && cleanNum < 100000000) candidateAmounts.push(cleanNum);
-            });
-          }
-        }
-      }
-
-      if (candidateAmounts.length > 0) return Math.max(...candidateAmounts);
-
-      const allNumbers = text.match(/\d{1,3}([.,]\d{3})+/g);
-      if (allNumbers) {
-        let cleaned = allNumbers.map(n => parseInt(n.replace(/[.,]/g, ''), 10)).filter(n => n >= 1000 && n < 100000000);
-        if (cleaned.length > 0) return Math.max(...cleaned);
-      }
-      return 0;
+      const numbers = text.match(/\d+([.,]\d+)?/g);
+      if (!numbers) return 0;
+      let clean = numbers.map(n => parseInt(n.replace(/[.,]/g, ''), 10)).filter(n => n >= 1000 && n < 100000000);
+      return clean.length ? Math.max(...clean) : 0;
     }
 
-    // JASTIP
-    function toggleJastipModal(show) {
-      document.getElementById('jastip-modal').classList.toggle('hidden', !show);
-    }
-
-    function toggleDpField() {
-      const payStatus = document.getElementById('j_pay_status').value;
-      document.getElementById('dp_field_container').classList.toggle('hidden', payStatus !== 'dp');
-    }
+    // ================= JASTIP =================
+    function toggleJastipModal(show) { document.getElementById('jastip-modal').classList.toggle('hidden', !show); }
+    function toggleDpField() { document.getElementById('dp_field_container').classList.toggle('hidden', document.getElementById('j_pay_status').value !== 'dp'); }
 
     document.querySelectorAll('.j-calc').forEach(el => {
       el.addEventListener('input', () => {
@@ -1300,64 +1231,59 @@
       });
     });
 
-    document.getElementById('jastip-form').addEventListener('submit', async function(e) {
+    document.getElementById('jastip-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const custName = document.getElementById('j_cust_name').value.trim();
-      const custContact = document.getElementById('j_cust_contact').value.trim() || '-';
-      const itemName = document.getElementById('j_item_name').value.trim();
-      const storeName = document.getElementById('j_store_name').value.trim() || 'Store';
-      
       const modal = parseFloat(document.getElementById('j_modal').value.replace(/\./g, '')) || 0;
       const fee = parseFloat(document.getElementById('j_fee').value.replace(/\./g, '')) || 0;
       const ongkir = parseFloat(document.getElementById('j_ongkir').value.replace(/\./g, '')) || 0;
       const totalTagihan = modal + fee + ongkir;
-
       const payStatus = document.getElementById('j_pay_status').value;
       const dpAmount = parseFloat(document.getElementById('j_dp_amount').value.replace(/\./g, '')) || 0;
-      const logistics = document.getElementById('j_logistics').value;
-
-      let sisaPiutang = (payStatus === 'belum') ? totalTagihan : (payStatus === 'dp' ? Math.max(0, totalTagihan - dpAmount) : 0);
 
       const newOrder = {
         id: Date.now(),
-        custName, custContact, itemName, storeName,
+        custName: document.getElementById('j_cust_name').value.trim(),
+        custContact: document.getElementById('j_cust_contact').value.trim() || '-',
+        itemName: document.getElementById('j_item_name').value.trim(),
+        storeName: document.getElementById('j_store_name').value.trim() || 'Store',
         modal, fee, ongkir, totalTagihan,
-        payStatus, dpAmount, sisaPiutang, logistics
+        payStatus, dpAmount,
+        sisaPiutang: (payStatus === 'belum') ? totalTagihan : (payStatus === 'dp' ? Math.max(0, totalTagihan - dpAmount) : 0),
+        logistics: document.getElementById('j_logistics').value
       };
 
       jastipOrders.unshift(newOrder);
-
       saveLocalBackup();
       updateJastipModule();
       this.reset();
-      document.getElementById('calc_display_total').innerText = 'Rp 0';
-      toggleDpField();
       toggleJastipModal(false);
-
       syncToSps('addJastip', newOrder);
-
-      alert("✅ Order Jastip berhasil disimpan!");
     });
 
-    async function toggleLunasOrder(id) {
-      const order = jastipOrders.find(o => o.id === id);
-      if (order) {
-        if (order.payStatus === 'lunas') {
-          order.payStatus = 'belum';
-          order.sisaPiutang = order.totalTagihan;
-        } else {
-          order.payStatus = 'lunas';
-          order.sisaPiutang = 0;
-        }
-        saveLocalBackup();
-        updateJastipModule();
+    function updateJastipModule() {
+      let tModal = 0, tFee = 0, tTagihan = 0, tPiutang = 0;
+      jastipOrders.forEach(o => { tModal += o.modal; tFee += o.fee; tTagihan += o.totalTagihan; tPiutang += o.sisaPiutang; });
+      document.getElementById('jastip-kpi-modal').innerText = formatRupiah(tModal);
+      document.getElementById('jastip-kpi-fee').innerText = formatRupiah(tFee);
+      document.getElementById('jastip-kpi-total').innerText = formatRupiah(tTagihan);
+      document.getElementById('jastip-kpi-piutang').innerText = formatRupiah(tPiutang);
 
-        syncToSps('updateJastip', { id: order.id, payStatus: order.payStatus, sisaPiutang: order.sisaPiutang });
-      }
+      document.getElementById('jastip-table-body').innerHTML = jastipOrders.map(o => `
+        <tr class="hover:bg-white/40">
+          <td class="py-3 px-3"><b>${o.custName}</b></td>
+          <td class="py-3 px-3">${o.itemName}</td>
+          <td class="py-3 px-3 text-right text-[#C04848] font-bold">${formatRupiah(o.modal)}</td>
+          <td class="py-3 px-3 text-right text-[#237059] font-bold">+${formatRupiah(o.fee)}</td>
+          <td class="py-3 px-3 text-right font-extrabold">${formatRupiah(o.totalTagihan)}</td>
+          <td class="py-3 px-3 text-center">${o.payStatus.toUpperCase()}</td>
+          <td class="py-3 px-3 text-center">${o.logistics}</td>
+          <td class="py-3 px-3 text-center"><button onclick="deleteJastip(${o.id})" class="text-[#5B8780] hover:text-rose-600"><i class="fa-regular fa-trash-can"></i></button></td>
+        </tr>
+      `).join('');
     }
 
-    async function deleteJastip(id) {
-      if(confirm("Hapus pesanan jastip ini?")) {
+    function deleteJastip(id) {
+      if (confirm("Hapus jastip?")) {
         jastipOrders = jastipOrders.filter(o => o.id !== id);
         saveLocalBackup();
         updateJastipModule();
@@ -1365,227 +1291,49 @@
       }
     }
 
-    function filterJastip(type) {
-      currentJastipFilter = type;
-      document.querySelectorAll('.jastip-f-btn').forEach(btn => {
-        btn.className = "jastip-f-btn px-3 py-1.5 rounded-lg font-bold bg-white/70 text-[#1E3631]";
-      });
-      event.target.className = "jastip-f-btn active-j-f px-3 py-1.5 rounded-lg font-bold bg-[#5B8780] text-white";
-      renderJastipTable();
-    }
-
-    function updateJastipModule() {
-      let tModal = 0, tFee = 0, tTagihan = 0, tPiutang = 0;
-      jastipOrders.forEach(o => {
-        tModal += o.modal;
-        tFee += o.fee;
-        tTagihan += o.totalTagihan;
-        tPiutang += o.sisaPiutang;
-      });
-
-      document.getElementById('jastip-kpi-modal').innerText = formatRupiah(tModal);
-      document.getElementById('jastip-kpi-fee').innerText = formatRupiah(tFee);
-      document.getElementById('jastip-kpi-total').innerText = formatRupiah(tTagihan);
-      document.getElementById('jastip-kpi-piutang').innerText = formatRupiah(tPiutang);
-
-      renderJastipTable();
-    }
-
-    function renderJastipTable() {
-      const tbody = document.getElementById('jastip-table-body');
-      let filtered = jastipOrders;
-      if (currentJastipFilter === 'piutang') filtered = jastipOrders.filter(o => o.sisaPiutang > 0);
-      else if (currentJastipFilter === 'po') filtered = jastipOrders.filter(o => o.logistics === 'Open PO');
-      else if (currentJastipFilter === 'selesai') filtered = jastipOrders.filter(o => o.logistics === 'Selesai');
-
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-xs text-[#5B8780]">Tidak ada pesanan jastip.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(o => `
-        <tr class="hover:bg-white/40">
-          <td class="py-3 px-3">
-            <p class="font-extrabold text-[#1E3631]">${o.custName}</p>
-            <p class="text-[10px] text-[#5B8780]">${o.custContact}</p>
-          </td>
-          <td class="py-3 px-3">
-            <p class="font-bold text-[#1E3631]">${o.itemName}</p>
-            <span class="text-[10px] text-[#5B8780]">${o.storeName}</span>
-          </td>
-          <td class="py-3 px-3 text-right font-bold text-[#C04848]">${formatRupiah(o.modal)}</td>
-          <td class="py-3 px-3 text-right font-bold text-[#237059]">+${formatRupiah(o.fee)}</td>
-          <td class="py-3 px-3 text-right font-extrabold text-[#1E3631]">${formatRupiah(o.totalTagihan)}</td>
-          <td class="py-3 px-3 text-center">
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${o.payStatus==='lunas'?'bg-emerald-100 text-emerald-800':(o.payStatus==='dp'?'bg-amber-100 text-amber-800':'bg-rose-100 text-rose-800')}">${o.payStatus.toUpperCase()}</span>
-            ${o.sisaPiutang>0 ? `<br><span class="text-[9px] text-amber-700 font-bold">Sisa: ${formatRupiah(o.sisaPiutang)}</span>`:''}
-            <button onclick="toggleLunasOrder(${o.id})" class="block mx-auto mt-1 text-[9px] text-[#5B8780] hover:text-[#237059] underline font-bold">
-              ${o.payStatus==='lunas'?'Ke Belum':'Tandai Lunas'}
-            </button>
-          </td>
-          <td class="py-3 px-3 text-center">
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${o.logistics}</span>
-          </td>
-          <td class="py-3 px-3 text-center">
-            <div class="flex items-center justify-center gap-1.5">
-              <button onclick="openWaInvoiceModal(${o.id})" title="Kirim Invoice WhatsApp" class="w-7 h-7 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-sm transition">
-                <i class="fa-brands fa-whatsapp text-xs"></i>
-              </button>
-              <button onclick="deleteJastip(${o.id})" title="Hapus Order" class="w-7 h-7 rounded-lg bg-white/70 hover:bg-rose-100 text-[#5B8780] hover:text-rose-600 flex items-center justify-center transition">
-                <i class="fa-regular fa-trash-can text-xs"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    // SHOPEEPAY
     function loadBankSettings() {
-      const defaultBank = 'ShopeePay';
-      const defaultAcc = '0895333536524';
-      const defaultHolder = 'MUHAMAD ILHAM JAYA KUSUMA';
-
-      document.getElementById('wa_bank_name').value = localStorage.getItem('fm_bank_name') || defaultBank;
-      document.getElementById('wa_bank_acc').value = localStorage.getItem('fm_bank_acc') || defaultAcc;
-      document.getElementById('wa_bank_holder').value = localStorage.getItem('fm_bank_holder') || defaultHolder;
+      document.getElementById('wa_bank_name').value = localStorage.getItem('fm_bank_name') || 'ShopeePay';
+      document.getElementById('wa_bank_acc').value = localStorage.getItem('fm_bank_acc') || '0895333536524';
+      document.getElementById('wa_bank_holder').value = localStorage.getItem('fm_bank_holder') || 'MUHAMAD ILHAM JAYA KUSUMA';
     }
-
     function saveBankSettings() {
       localStorage.setItem('fm_bank_name', document.getElementById('wa_bank_name').value);
       localStorage.setItem('fm_bank_acc', document.getElementById('wa_bank_acc').value);
       localStorage.setItem('fm_bank_holder', document.getElementById('wa_bank_holder').value);
     }
-
-    function toggleWaModal(show) {
-      document.getElementById('wa-invoice-modal').classList.toggle('hidden', !show);
-    }
-
+    function toggleWaModal(show) { document.getElementById('wa-invoice-modal').classList.toggle('hidden', !show); }
     function openWaInvoiceModal(selectedId = null) {
-      if (jastipOrders.length === 0) {
-        alert("Belum ada data order jastip untuk dibuatkan invoice!");
-        return;
-      }
+      if (jastipOrders.length === 0) return alert("Belum ada data jastip!");
       loadBankSettings();
-      const select = document.getElementById('wa_select_order');
-      select.innerHTML = jastipOrders.map(o => `
-        <option value="${o.id}" ${selectedId === o.id ? 'selected' : ''}>
-          ${o.custName} - ${o.itemName} (${o.payStatus.toUpperCase()})
-        </option>
-      `).join('');
+      document.getElementById('wa_select_order').innerHTML = jastipOrders.map(o => `<option value="${o.id}">${o.custName} - ${o.itemName}</option>`).join('');
       renderWaPreview();
       toggleWaModal(true);
     }
-
     function renderWaPreview() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
-      const order = jastipOrders.find(o => o.id === selectedId);
-      if (!order) return;
-
-      const bank = document.getElementById('wa_bank_name').value || 'ShopeePay';
-      const rek = document.getElementById('wa_bank_acc').value || '0895333536524';
-      const holder = document.getElementById('wa_bank_holder').value || 'MUHAMAD ILHAM JAYA KUSUMA';
-
-      let statusDesc = '';
-      if (order.payStatus === 'lunas') {
-        statusDesc = '✅ *LUNAS (100%)*';
-      } else if (order.payStatus === 'dp') {
-        statusDesc = `⚠️ *DP Diterima: ${formatRupiah(order.dpAmount)}*`;
-      } else {
-        statusDesc = '❌ *Belum Ada Pembayaran*';
-      }
-
-      const invoiceText = 
-`Halo Kak *${order.custName}*! ✨
-Terima kasih sudah order jastip. Berikut rincian invoice pesanan kamu:
-
-🛍️ *Detail Pesanan:*
-• Barang: *${order.itemName}*
-• Toko/Store: ${order.storeName}
-• Status Logistik: ${order.logistics}
-
-💵 *Rincian Biaya:*
-• Harga Beli Barang: ${formatRupiah(order.modal)}
-• Fee Jastip: ${formatRupiah(order.fee)}
-• Ongkir/Packing: ${formatRupiah(order.ongkir)}
-──────────────────────
-• *TOTAL TAGIHAN: ${formatRupiah(order.totalTagihan)}*
-• Status Bayar: ${statusDesc}
-• *SISA PELUNASAN: ${formatRupiah(order.sisaPiutang)}*
-
-🏦 *Pembayaran Transfer Melalui:*
-• E-Wallet / Bank: *${bank}*
-• Nomor Shopee: *${rek}*
-• Atas Nama: *${holder}*
-
-Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak. Terima kasih banyak! 🙏💖`;
-
-      document.getElementById('wa_text_preview').value = invoiceText;
+      const id = Number(document.getElementById('wa_select_order').value);
+      const o = jastipOrders.find(x => x.id === id);
+      if (!o) return;
+      document.getElementById('wa_text_preview').value = `Halo Kak *${o.custName}*!\nTotal tagihan jastip: *${formatRupiah(o.totalTagihan)}*\nSisa Bayar: *${formatRupiah(o.sisaPiutang)}*\nTransfer ke: ${document.getElementById('wa_bank_name').value} (${document.getElementById('wa_bank_acc').value}) a.n ${document.getElementById('wa_bank_holder').value}`;
     }
-
-    function copyWaInvoice() {
-      const textarea = document.getElementById('wa_text_preview');
-      textarea.select();
-      navigator.clipboard.writeText(textarea.value).then(() => {
-        alert("✅ Teks Invoice WhatsApp berhasil disalin!");
-      }).catch(() => {
-        document.execCommand('copy');
-        alert("✅ Teks Invoice disalin!");
-      });
-    }
-
+    function copyWaInvoice() { navigator.clipboard.writeText(document.getElementById('wa_text_preview').value).then(() => alert("✅ Invoice disalin!")); }
     function sendWaDirect() {
-      const selectedId = Number(document.getElementById('wa_select_order').value);
-      const order = jastipOrders.find(o => o.id === selectedId);
-      const text = encodeURIComponent(document.getElementById('wa_text_preview').value);
-
-      let phone = (order ? order.custContact : '').replace(/\D/g, '');
-      if (phone.startsWith('0')) {
-        phone = '62' + phone.slice(1);
-      } else if (phone && !phone.startsWith('62')) {
-        phone = '62' + phone;
-      }
-
-      const waUrl = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
-      window.open(waUrl, '_blank');
+      const id = Number(document.getElementById('wa_select_order').value);
+      const o = jastipOrders.find(x => x.id === id);
+      let phone = (o ? o.custContact : '').replace(/\D/g, '');
+      if (phone.startsWith('0')) phone = '62' + phone.slice(1);
+      window.open(phone ? `https://wa.me/${phone}?text=${encodeURIComponent(document.getElementById('wa_text_preview').value)}` : `https://wa.me/?text=${encodeURIComponent(document.getElementById('wa_text_preview').value)}`, '_blank');
     }
 
-    // Inisialisasi
     window.onload = () => {
-      const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
-      barChart = new Chart(ctxBar, {
+      barChart = new Chart(document.getElementById('cashflowBarChart').getContext('2d'), {
         type: 'bar',
-        data: {
-          labels: ownersList.map((name, i) => `${OWNER_EMOJIS[i % OWNER_EMOJIS.length]} ${name}`),
-          datasets: [{ 
-            data: ownersList.map(() => 0), 
-            backgroundColor: ownersList.map((_, i) => OWNER_COLORS[i % OWNER_COLORS.length]), 
-            borderRadius: 8, 
-            barThickness: 32 
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#5B8780', callback: v => 'Rp '+(v/1000)+'k' }, grid: { color: 'rgba(255,255,255,0.4)' } },
-            x: { ticks: { color: '#1E3631', font: { weight: 'bold' } }, grid: { display: false } }
-          }
-        }
+        data: { labels: ownersList, datasets: [{ data: ownersList.map(() => 0), backgroundColor: OWNER_COLORS, borderRadius: 8 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
-
-      const ctxDonut = document.getElementById('expenseCategoryChart').getContext('2d');
-      donutChart = new Chart(ctxDonut, {
+      donutChart = new Chart(document.getElementById('expenseCategoryChart').getContext('2d'), {
         type: 'doughnut',
-        data: {
-          labels: [],
-          datasets: [{ data: [], backgroundColor: ['#F9CE77', '#C04848', '#5B8780', '#DFA354', '#8AAFA8'], borderWidth: 2, borderColor: '#FAF5EB' }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, color: '#1E3631' } } },
-          cutout: '68%'
-        }
+        data: { labels: [], datasets: [{ data: [], backgroundColor: ['#F9CE77', '#C04848', '#5B8780', '#DFA354'] }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '68%' }
       });
 
       applyDynamicOwnersUI();
@@ -1593,8 +1341,15 @@ Mohon konfirmasi & kirimkan bukti transfer jika sudah melakukan pelunasan ya kak
       loadLocalBackup();
       updateKasDashboard();
       updateJastipModule();
+      renderRekapTable();
 
       fetchFromSps();
+      fetchFromRekapSps();
+
+      // Sinkronisasi otomatis setiap 15 detik
+      setInterval(() => {
+        if (currentMainTab === 'tab-rekap') fetchFromRekapSps(false);
+      }, 15000);
     };
   </script>
 </body>
