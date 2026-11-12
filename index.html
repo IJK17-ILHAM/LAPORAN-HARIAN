@@ -55,7 +55,7 @@
         width: 100% !important;
         height: auto !important;
       }
-      #splash-screen, header, .no-print, #modal-rekap, #modal-manage-owners, #wa-invoice-modal, #jastip-modal, #flowmaster-dropdown {
+      #splash-screen, header, .no-print, #modal-rekap, #modal-manage-owners, #modal-create-sheet, #wa-invoice-modal, #jastip-modal, #flowmaster-dropdown {
         display: none !important;
       }
       #main-app-container {
@@ -122,7 +122,7 @@
 </head>
 <body class="text-[#1E3631] relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
-  <!-- LAYAR PEMBUKA -->
+  <!-- ================= LAYAR PEMBUKA ================= -->
   <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-screen h-screen bg-[#23433C] flex flex-col items-center justify-between select-none cursor-pointer overflow-hidden touch-none no-print">
     <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/15 blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/30 blur-3xl pointer-events-none"></div>
@@ -157,17 +157,19 @@
     </div>
   </div>
 
-  <!-- KONTEN UTAMA DASBOR -->
+  <!-- ================= KONTEN UTAMA DASBOR ================= -->
   <div id="main-app-container" class="relative z-10 flex flex-col min-h-screen pb-16 opacity-0 pointer-events-none transition-opacity duration-300">
     
     <header class="px-3 md:px-6 pt-3 pb-2 no-print relative z-30">
       <div class="max-w-6xl mx-auto banner-glass-card rounded-2xl p-2.5 md:px-5 md:py-3 flex items-center justify-between gap-2 relative">
         
         <div class="relative flex items-center gap-2 md:gap-3" id="flowmaster-menu-container">
+          <!-- ICON LOGO: KHUSUS KEMBALI KE LAYAR PEMBUKA -->
           <div onclick="returnToSplash()" class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[#5B8780] hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-sm md:text-base font-bold cursor-pointer select-none active:scale-90 transition duration-200 group" title="Kembali ke Layar Depan (KEUANGAN)">
             <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform"></i>
           </div>
 
+          <!-- TEKS FLOWMASTER & TOMBOL PILIHAN MENU DI BAWAHNYA -->
           <div class="flex flex-col justify-center">
             <h1 onclick="returnToSplash()" class="text-sm md:text-base font-black text-[#1E3631] tracking-tight cursor-pointer hover:text-[#5B8780] transition leading-none">
               FlowMaster
@@ -217,6 +219,7 @@
           </div>
         </div>
 
+        <!-- INDIKATOR STATUS SPS REAL-TIME DI POJOK KANAN ATAS -->
         <div class="flex items-center shrink-0">
           <button onclick="syncAllRealTime(true)" id="sps-status-badge" class="flex items-center gap-1.5 px-2.5 py-1.5 md:px-3 md:py-1.5 rounded-full bg-white/80 border border-white text-[11px] md:text-xs font-extrabold text-[#1E3631] hover:bg-white shadow-sm active:scale-95 transition whitespace-nowrap" title="Klik untuk refresh manual">
             <span id="sps-dot" class="w-2 h-2 rounded-full bg-emerald-500 shadow shrink-0"></span>
@@ -303,7 +306,7 @@
           </div>
         </div>
 
-        <!-- FORM CATAT KAS (KATEGORI TEKS & KETERANGAN OPTIONAL KOSONG) -->
+        <!-- FORM CATAT KAS -->
         <div id="view-kas-form" class="hidden max-w-lg mx-auto space-y-3">
           <input type="file" id="receipt-camera-file" accept="image/*" capture="environment" class="hidden" onchange="handleReceiptFile(this)">
           <div class="banner-glass-card rounded-3xl p-5 md:p-6 shadow-xl border border-white">
@@ -342,13 +345,11 @@
                 <input type="text" id="kas_amount" required inputmode="numeric" placeholder="0" class="currency-input w-full px-3 py-2.5 bg-white/80 border border-white rounded-xl text-base font-extrabold text-[#1E3631]">
               </div>
 
-              <!-- REVISI: KATEGORI CUKUP TULISAN/INPUT TEKS BIASA -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Kategori</label>
                 <input type="text" id="kas_category" placeholder="Ketik kategori (cth: Makan, Belanja, Bensin)" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
               </div>
 
-              <!-- REVISI: KETERANGAN JIKA TIDAK DIISI DIBIARKAN KOSONG -->
               <div>
                 <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Keterangan (Opsional)</label>
                 <input type="text" id="kas_desc" placeholder="Kosongkan jika tidak ada" class="w-full px-3 py-2 bg-white/80 border border-white rounded-xl text-xs font-medium text-[#1E3631] focus:outline-none">
@@ -444,7 +445,7 @@
       </section>
 
       <!-- ============================================================== -->
-      <!-- [MODUL 3] REKAP BELANJA (DENGAN BREAKDOWN CICILAN OTOMATIS)     -->
+      <!-- [MODUL 3] REKAP BELANJA                                        -->
       <!-- ============================================================== -->
       <section id="module-rekap" class="hidden space-y-4 md:space-y-5">
         
@@ -456,16 +457,21 @@
 
         <div class="flex items-center justify-between gap-3 flex-wrap no-print">
           <div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h2 class="text-base md:text-xl font-extrabold text-[#1E3631]">Sheet Pengeluaran & Jatuh Tempo</h2>
-              <span id="active-month-badge" class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-extrabold border border-emerald-300">
-                Memuat Periode...
-              </span>
+              <select id="select-active-sheet" onchange="onSwitchSheetPeriod(this.value)" class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 font-extrabold border border-emerald-300 focus:outline-none">
+                <option value="">Memuat Periode...</option>
+              </select>
             </div>
             <p class="text-[11px] md:text-xs text-[#5B8780]">Otomatis sheet baru per bulan & sinkron real-time dua arah.</p>
           </div>
 
           <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="openCreateSheetModal()" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5 active:scale-95" title="Buat Sheet Baru di SPS secara Manual">
+              <i class="fa-solid fa-folder-plus"></i>
+              <span>+ Sheet Baru</span>
+            </button>
+
             <button onclick="generateAndSendPdfToWa()" id="btn-wa-pdf" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5 active:scale-95">
               <i class="fa-solid fa-file-pdf"></i>
               <span>Kirim PDF ke WA</span>
@@ -484,7 +490,7 @@
           </div>
         </div>
 
-        <!-- 3 KARTU KPI (TOTAL CICILAN OTOMATIS TERHITUNG) -->
+        <!-- 3 KARTU KPI -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 no-print">
           <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]">
             <span class="text-[10px] font-bold uppercase text-[#5B8780]">Total Keseluruhan</span>
@@ -536,6 +542,30 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- MODAL: BUAT SHEET BARU MANUAL -->
+  <div id="modal-create-sheet" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-white space-y-4">
+      <div class="flex items-center justify-between border-b border-white/70 pb-3">
+        <h3 class="text-sm font-extrabold text-[#1E3631] flex items-center gap-2">
+          <i class="fa-solid fa-folder-plus text-emerald-700"></i> Buat Sheet Baru di SPS
+        </h3>
+        <button onclick="toggleModal('modal-create-sheet', false)" class="text-[#5B8780] hover:text-rose-600 font-bold">âœ•</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Nama Sheet / Periode Baru:</label>
+          <input type="text" id="new_sheet_name_input" placeholder="Contoh: Desember 2026, Liburan" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631] focus:outline-none focus:ring-2 focus:ring-[#5B8780]">
+          <p class="text-[9px] text-[#5B8780] mt-1 italic">*Format template dan rumus TOTAL otomatis diduplikasi ke sheet baru.</p>
+        </div>
+
+        <button onclick="submitCreateSheetManual()" id="btn-create-sheet" class="w-full py-2.5 bg-[#5B8780] hover:bg-[#466964] text-white rounded-xl text-xs font-extrabold shadow active:scale-95 transition">
+          Buat Sheet Sekarang
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: KELOLA PEMILIK -->
@@ -706,7 +736,7 @@
     </div>
   </div>
 
-  <!-- MODAL: INPUT / EDIT REKAP BELANJA (DENGAN BREAKDOWN CICILAN) -->
+  <!-- MODAL: INPUT / EDIT REKAP BELANJA -->
   <div id="modal-rekap" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
     <div class="banner-glass-card rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl border border-white space-y-4">
       <div class="flex items-center justify-between border-b border-white/70 pb-3">
@@ -735,7 +765,6 @@
           <input type="text" id="r_catatan" placeholder="-" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-medium text-[#1E3631]">
         </div>
 
-        <!-- PILIHAN TIPE RUTIN ATAU CICILAN DENGAN BREAKDOWN TENOR -->
         <div>
           <label class="block text-[10px] font-bold text-[#5B8780] uppercase mb-1">Tipe / Kolom E</label>
           <select id="r_is_cicilan" onchange="toggleCicilanBreakdownField()" class="w-full px-3 py-2 bg-white/90 border border-white rounded-xl text-xs font-bold text-[#1E3631]">
@@ -744,7 +773,6 @@
           </select>
         </div>
 
-        <!-- BREAKDOWN KOLOM TENOR CICILAN (MUNCUL OTOMATIS) -->
         <div id="cicilan_breakdown_container" class="hidden p-3 bg-rose-50/70 border border-rose-200 rounded-2xl space-y-2">
           <div class="flex items-center justify-between">
             <label class="block text-[10px] font-extrabold text-[#C04848] uppercase">Tenor Cicilan (Berapa Kali Bayar):</label>
@@ -775,7 +803,7 @@
     let rekapBelanjaList = [];
     let kasTransactions = [];
     let jastipOrders = [];
-    let activeSheetName = "";
+    let activeSheetName = localStorage.getItem('fm_rekap_selected_sheet') || "";
 
     let currentMainTab = localStorage.getItem('fm_active_tab') || 'tab-kas';
     let currentTimeFilter = 'bulan_ini';
@@ -826,12 +854,23 @@
 
     async function fetchFromRekapSps(isManual = false) {
       try {
-        const resp = await fetch(`${SPS_2_URL}?action=getRekap&_cb=${Date.now()}`);
+        const querySheet = activeSheetName ? `&sheet=${encodeURIComponent(activeSheetName)}` : '';
+        const resp = await fetch(`${SPS_2_URL}?action=getRekap${querySheet}&_cb=${Date.now()}`);
         const json = await resp.json();
+
         if (json.status === 'success') {
           activeSheetName = json.sheetName || "Bulan Ini";
-          document.getElementById('active-month-badge').innerText = `Periode: ${activeSheetName}`;
+          localStorage.setItem('fm_rekap_selected_sheet', activeSheetName);
+
           document.getElementById('print-date-display').innerText = `Periode Aktif: ${activeSheetName} (Dicetak pada: ${new Date().toLocaleDateString('id-ID')})`;
+
+          if (json.availableSheets && json.availableSheets.length > 0) {
+            const selectSheet = document.getElementById('select-active-sheet');
+            selectSheet.innerHTML = json.availableSheets.map(s => `
+              <option value="${s}" ${s === activeSheetName ? 'selected' : ''}>ðŸ“„ ${s}</option>
+            `).join('');
+          }
+
           rekapBelanjaList = json.data || [];
           saveLocalBackup();
           renderRekapTable();
@@ -841,6 +880,42 @@
       } catch (e) {
         console.warn("SPS 2 Offline / Cache:", e);
       }
+    }
+
+    function onSwitchSheetPeriod(sheetName) {
+      if (!sheetName) return;
+      activeSheetName = sheetName;
+      localStorage.setItem('fm_rekap_selected_sheet', sheetName);
+      fetchFromRekapSps(false);
+    }
+
+    function openCreateSheetModal() {
+      document.getElementById('new_sheet_name_input').value = '';
+      toggleModal('modal-create-sheet', true);
+    }
+
+    async function submitCreateSheetManual() {
+      const input = document.getElementById('new_sheet_name_input');
+      const newName = input.value.trim();
+      if (!newName) return alert("Silakan ketik nama sheet/periode baru!");
+
+      const btn = document.getElementById('btn-create-sheet');
+      btn.disabled = true;
+      btn.innerText = "Membuat Sheet di Spreadsheet...";
+
+      await postDataRealTime(SPS_2_URL, {
+        action: 'createSheetManual',
+        data: { sheetName: newName }
+      });
+
+      alert(`âœ… Berhasil! Sheet baru "${newName}" telah dibuat otomatis di Spreadsheet.`);
+      activeSheetName = newName;
+      localStorage.setItem('fm_rekap_selected_sheet', newName);
+      toggleModal('modal-create-sheet', false);
+      btn.disabled = false;
+      btn.innerText = "Buat Sheet Sekarang";
+
+      setTimeout(() => fetchFromRekapSps(false), 1500);
     }
 
     function syncAllRealTime(isManual = false) {
@@ -1053,7 +1128,6 @@
       return true;
     }
 
-    // SIMPAN TRANSAKSI KAS (KATEGORI BEBAS KETIK & KETERANGAN BISA KOSONG)
     document.getElementById('kas-transaction-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-kas');
@@ -1062,7 +1136,7 @@
 
       const amount = parseFloat(document.getElementById('kas_amount').value.replace(/\./g, '')) || 0;
       const category = document.getElementById('kas_category').value.trim() || 'Umum';
-      const desc = document.getElementById('kas_desc').value.trim(); // Dibiarkan kosong jika tidak diisi
+      const desc = document.getElementById('kas_desc').value.trim();
       const ownerInput = document.querySelector('input[name="kas_owner"]:checked');
       const owner = ownerInput ? ownerInput.value : (ownersList[0] || 'Umum');
       const type = document.querySelector('input[name="kas_type"]:checked').value;
@@ -1408,7 +1482,7 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
     }
 
     // ==============================================================
-    // REKAP BELANJA DENGAN BREAKDOWN TENOR CICILAN
+    // REKAP BELANJA (LOGIKA PERHITUNGAN TOTAL & CICILAN OTOMATIS)
     // ==============================================================
     function toggleCicilanBreakdownField() {
       const isCicilan = document.getElementById('r_is_cicilan').value === 'cicilan';
@@ -1454,7 +1528,6 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
       const isCicil = (item.totalJenis || '').toLowerCase().includes('cicil');
       document.getElementById('r_is_cicilan').value = isCicil ? 'cicilan' : 'rutin';
 
-      // Ekstrak angka tenor jika ada (misal: "Cicilan (3x)")
       if (isCicil) {
         const match = (item.totalJenis || '').match(/\((\d+)x\)/);
         document.getElementById('r_tenor_count').value = match ? match[1] : '3';
@@ -1476,6 +1549,7 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
 
         await postDataRealTime(SPS_2_URL, {
           action: 'deleteRekap',
+          sheetName: activeSheetName,
           data: { rowIndex: deletedRowIndex }
         });
 
@@ -1492,10 +1566,9 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
         const val = Number(item.harga) || 0;
         totalKeseluruhan += val;
         
-        // Cek apakah item bertipe cicilan
         const isCicil = (item.totalJenis || '').toLowerCase().includes('cicil');
         if (isCicil) {
-          totalCicilan += val; // Otomatis masuk ke Total Cicilan
+          totalCicilan += val;
         }
         if (item.statusLunas !== 'lunas') {
           totalSisa += val;
@@ -1564,7 +1637,6 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
       const catatan = document.getElementById('r_catatan').value.trim() || '-';
       const isCicilType = document.getElementById('r_is_cicilan').value === 'cicilan';
       
-      // Susun nama jenis: Jika cicilan 3x -> "Cicilan (3x)"
       const tenorCount = document.getElementById('r_tenor_count').value || '1';
       const totalJenis = isCicilType ? `Cicilan (${tenorCount}x)` : 'Rutin';
 
@@ -1591,7 +1663,11 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
         saveLocalBackup();
         renderRekapTable();
 
-        await postDataRealTime(SPS_2_URL, { action: 'editRekap', data: updatedItem });
+        await postDataRealTime(SPS_2_URL, {
+          action: 'editRekap',
+          sheetName: activeSheetName,
+          data: updatedItem
+        });
         alert(`âœ… Data "${pengeluaran}" berhasil diperbarui di Spreadsheet!`);
       } else {
         const newItem = { id: Date.now(), tglTempo, pengeluaran, harga, catatan, totalJenis, statusLunas: 'belum' };
@@ -1599,7 +1675,11 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
         saveLocalBackup();
         renderRekapTable();
 
-        await postDataRealTime(SPS_2_URL, { action: 'addRekap', data: newItem });
+        await postDataRealTime(SPS_2_URL, {
+          action: 'addRekap',
+          sheetName: activeSheetName,
+          data: newItem
+        });
         alert(`âœ… Berhasil dicatat ke Sheet ${activeSheetName}!`);
       }
 
@@ -1618,7 +1698,8 @@ Mohon konfirmasi jika sudah melakukan pembayaran ya kak. Terima kasih banyak! ðŸ
       btn.disabled = true;
 
       try {
-        const resp = await fetch(`${SPS_2_URL}?action=getPdfLink&_cb=${Date.now()}`);
+        const querySheet = activeSheetName ? `&sheet=${encodeURIComponent(activeSheetName)}` : '';
+        const resp = await fetch(`${SPS_2_URL}?action=getPdfLink${querySheet}&_cb=${Date.now()}`);
         const res = await resp.json();
 
         if (res.status === 'success' && res.pdfUrl) {
@@ -1663,7 +1744,7 @@ ${res.pdfUrl}`;
     }
 
     // ==============================================================
-    // INISIALISASI (AUTO REMEMBER STATUS DASHBOARD & TAB TERAKHIR)
+    // INISIALISASI
     // ==============================================================
     window.onload = () => {
       const ctxBar = document.getElementById('cashflowBarChart').getContext('2d');
@@ -1689,7 +1770,7 @@ ${res.pdfUrl}`;
       updateKasDashboard();
       updateJastipModule();
 
-      // JIKA SUDAH BUKA DASBOR, SAAT DI-REFRESH TETAP BERADA DI DALAM DASBOR
+      // AUTO REMEMBER UNLOCK STATUS
       if (localStorage.getItem('fm_dashboard_unlocked') === 'true') {
         const splash = document.getElementById('splash-screen');
         const mainApp = document.getElementById('main-app-container');
@@ -1699,7 +1780,6 @@ ${res.pdfUrl}`;
         document.body.classList.remove('overflow-hidden');
       }
 
-      // KEMBALIKAN KE TAB TERAKHIR YANG SEDANG AKTIF
       const tabLabels = {
         'tab-kas': 'Kas & Dompet',
         'tab-jastip': 'Kelola Jastip',
