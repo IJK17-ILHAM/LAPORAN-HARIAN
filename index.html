@@ -28,7 +28,6 @@
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-thumb { background: rgba(91, 135, 128, 0.4); border-radius: 9999px; }
 
-    /* KARTU GLASS KREM ELEGAN KHAS SEBELUMNYA */
     .banner-glass-card {
       background: rgba(250, 245, 235, 0.94);
       backdrop-filter: blur(14px);
@@ -43,7 +42,6 @@
     }
     #splash-screen.slide-up { transform: translateY(-100%); }
 
-    /* DROPDOWN MENU */
     #flowmaster-dropdown {
       transform-origin: top left;
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -51,27 +49,95 @@
     #flowmaster-dropdown.dropdown-closed { opacity: 0; transform: scale(0.95) translateY(-8px); pointer-events: none; }
     #flowmaster-dropdown.dropdown-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
 
-    /* CETAK LEMBAR A4 RESMI */
-    @page { size: A4 portrait; margin: 12mm 10mm 15mm 10mm; }
+    /* ================= ATURAN CETAK / EXPORT PDF A4 (TABEL RESMI SPREADSHEET) ================= */
+    @page {
+      size: A4 portrait;
+      margin: 10mm 10mm 15mm 10mm;
+    }
+
     @media print {
-      body { background: #fff !important; color: #000 !important; }
+      body, html {
+        background: #ffffff !important;
+        color: #000000 !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+      /* Sembunyikan elemen layar HP yang tidak perlu di lembar cetak */
       #splash-screen, header, .bottom-nav-bar, .no-print, #modal-rekap, #modal-manage-owners, #modal-create-sheet, #wa-invoice-modal, #jastip-modal, #modal-menu-titik-tiga, .background-blobs {
         display: none !important;
       }
-      #main-app-container { opacity: 1 !important; pointer-events: auto !important; padding: 0 !important; margin: 0 !important; }
-      #module-kas, #module-jastip, #module-riwayat { display: none !important; }
-      #module-rekap { display: block !important; }
-      .banner-glass-card { background: #fff !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
-      table { border-collapse: collapse !important; width: 100% !important; border: 1.5px solid #000 !important; }
-      th, td { border: 1px solid #444 !important; color: #000 !important; padding: 6px !important; }
-      th { background-color: #d1e5e0 !important; }
-      .print-only-header { display: block !important; }
+      #main-app-container {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+      }
+      #module-kas, #module-jastip, #module-riwayat {
+        display: none !important;
+      }
+      #module-rekap {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .banner-glass-card {
+        background: #ffffff !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      
+      /* TAMPILAN RESMI TABEL SPREADSHEET SESUAI EXCEL ASLI */
+      .print-table-area {
+        display: block !important;
+        width: 100% !important;
+      }
+      .print-table-area table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+        font-size: 10pt !important;
+        border: 1.5px solid #23433C !important;
+      }
+      .print-table-area th, 
+      .print-table-area td {
+        border: 1px solid #7c948e !important;
+        padding: 6px 8px !important;
+        color: #000000 !important;
+        word-wrap: break-word !important;
+      }
+      .print-table-area thead tr {
+        background-color: #BBD7CE !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+      }
+      .print-table-area tfoot tr.footer-total-row td.label-cell {
+        background-color: #BBD7CE !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-weight: 800 !important;
+      }
+      .print-table-area tfoot tr.footer-total-row td.val-cell {
+        background-color: #f1a7a7 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color: #851d1d !important;
+        font-weight: 900 !important;
+      }
+      .print-only-header {
+        display: block !important;
+      }
     }
   </style>
 </head>
 <body class="text-[#1E3631] relative overflow-hidden flex flex-col justify-between selection:bg-[#F9CE77]">
 
-  <!-- ================= LAYAR PEMBUKA (WARNA IDENTIK ASLI) ================= -->
+  <!-- ================= LAYAR PEMBUKA ================= -->
   <div id="splash-screen" onclick="unlockDashboard()" class="fixed inset-0 z-50 w-screen h-screen bg-[#23433C] flex flex-col items-center justify-between select-none cursor-pointer overflow-hidden touch-none no-print p-6">
     <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-[#F9CE77]/15 blur-3xl pointer-events-none"></div>
     <div class="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-[#5B8780]/30 blur-3xl pointer-events-none"></div>
@@ -123,14 +189,12 @@
     <header class="px-3 md:px-6 pt-3 pb-2 no-print relative z-30">
       <div class="max-w-md mx-auto banner-glass-card rounded-2xl p-2.5 md:px-4 md:py-3 flex items-center justify-between gap-2 relative">
         
-        <!-- BAGIAN KIRI: FLOWMASTER & MENU PILIHAN DI BAWAHNYA -->
         <div class="relative flex items-center gap-2.5" id="flowmaster-menu-container">
           <!-- ICON LOGO: KHUSUS KEMBALI KE LAYAR PEMBUKA -->
           <div onclick="returnToSplash()" class="w-10 h-10 rounded-xl bg-[#5B8780] hover:bg-[#466964] text-[#FAF5EB] flex items-center justify-center shadow text-base font-bold cursor-pointer select-none active:scale-90 transition duration-200 group" title="Kembali ke Layar Depan (KEUANGAN)">
             <i class="fa-solid fa-shapes group-hover:rotate-12 transition-transform"></i>
           </div>
 
-          <!-- TEKS FLOWMASTER & TOMBOL PILIHAN MENU DI BAWAHNYA -->
           <div class="flex flex-col justify-center">
             <h1 onclick="returnToSplash()" class="text-base font-black text-[#1E3631] tracking-tight cursor-pointer hover:text-[#5B8780] transition leading-none">
               FlowMaster
@@ -141,7 +205,7 @@
             </button>
           </div>
 
-          <!-- DROPDOWN BREAKDOWN PILIHAN MENU -->
+          <!-- DROPDOWN PILIHAN MENU -->
           <div id="flowmaster-dropdown" class="dropdown-closed absolute top-full left-0 mt-2.5 w-60 md:w-64 banner-glass-card rounded-2xl p-2 shadow-2xl border border-white/80 z-50 space-y-1">
             <div class="px-2.5 py-1 border-b border-white/60 mb-1 flex items-center justify-between">
               <span class="text-[9px] font-black uppercase text-[#5B8780] tracking-wider">Pilih Modul</span>
@@ -180,7 +244,6 @@
           </div>
         </div>
 
-        <!-- INDIKATOR STATUS SPS REAL-TIME DI POJOK KANAN ATAS -->
         <div class="flex items-center shrink-0">
           <button onclick="syncAllRealTime(true)" id="sps-status-badge" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 border border-white text-xs font-extrabold text-[#1E3631] hover:bg-white shadow-sm active:scale-95 transition whitespace-nowrap" title="Klik untuk refresh manual">
             <span id="sps-dot" class="w-2 h-2 rounded-full bg-emerald-500 shadow shrink-0"></span>
@@ -192,15 +255,13 @@
       </div>
     </header>
 
-    <!-- MAIN APP CONTENT AREA -->
+    <!-- CONTENT AREA -->
     <main class="max-w-md mx-auto w-full px-3 md:px-4 pt-2 pb-6 space-y-3.5">
 
       <!-- ============================================================== -->
       <!-- [MODUL 1] KAS DAN DOMPET                                       -->
       <!-- ============================================================== -->
       <section id="module-kas" class="space-y-3">
-        
-        <!-- FILTER CHIPS KAS -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold">
           <button onclick="changeTimeFilterKas('bulan_ini')" id="chip-time-kas" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full banner-glass-card border border-white text-[#1E3631]">
             <i class="fa-regular fa-calendar text-[11px] text-[#5B8780]"></i>
@@ -218,7 +279,6 @@
           </button>
         </div>
 
-        <!-- KARTU UTAMA SISA SALDO (HARMONIS WARNA KAS) -->
         <div class="rounded-3xl p-5 bg-[#23433C] text-[#FAF5EB] border-2 border-[#F9CE77]/60 relative overflow-hidden shadow-xl">
           <div class="absolute -right-10 -bottom-10 w-36 h-36 rounded-full bg-[#5B8780]/40 blur-2xl pointer-events-none"></div>
           <p class="text-xs font-bold text-[#F9CE77] uppercase tracking-wider mb-1" id="kpi-saldo-title">Sisa Saldo Kas</p>
@@ -228,7 +288,6 @@
           </p>
         </div>
 
-        <!-- GRID 2 KARTU: PEMASUKAN & PENGELUARAN -->
         <div class="grid grid-cols-2 gap-2.5">
           <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]">
             <div class="flex items-center gap-1.5 text-xs text-[#5B8780] font-bold mb-1">
@@ -244,13 +303,11 @@
           </div>
         </div>
 
-        <!-- BANNER NOTIFIKASI JATUH TEMPO -->
         <div onclick="switchAppTab('tab-rekap')" class="rounded-2xl px-4 py-3 bg-[#FAF5EB] border border-[#F9CE77] flex items-center gap-2.5 text-amber-800 cursor-pointer active:scale-98 transition shadow">
           <i class="fa-regular fa-bell text-sm text-amber-600"></i>
           <span class="text-xs font-bold" id="banner-jatuh-tempo-text">0 tagihan jatuh tempo hari ini</span>
         </div>
 
-        <!-- PENGELUARAN PER PEMILIK -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-[#5B8780] uppercase tracking-wider">Pengeluaran per pemilik</span>
@@ -259,21 +316,18 @@
           <div id="dynamic-owner-cards-container" class="grid grid-cols-2 gap-2.5"></div>
         </div>
 
-        <!-- PLACEHOLDER TRANSAKSI -->
         <div class="banner-glass-card rounded-2xl p-4 text-center space-y-2 border-dashed border-[#5B8780]/40">
           <p class="text-xs font-semibold text-[#5B8780]" id="kas-empty-state-text">Catat pemasukan atau pengeluaran kas baru</p>
           <button onclick="openKasModal()" class="px-3.5 py-1.5 rounded-xl bg-[#5B8780] hover:bg-[#466964] text-white text-xs font-bold shadow transition active:scale-95">
             + Catat Pengeluaran Baru
           </button>
         </div>
-
       </section>
 
       <!-- ============================================================== -->
       <!-- [MODUL 2] ORDER JASTIP                                         -->
       <!-- ============================================================== -->
       <section id="module-jastip" class="hidden space-y-3">
-        
         <div class="flex items-center justify-between">
           <h1 class="text-lg font-extrabold text-[#1E3631] tracking-tight">Order Jastip</h1>
           <button onclick="toggleJastipModal(true)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#5B8780] hover:bg-[#466964] text-white text-xs font-bold shadow active:scale-95 transition">
@@ -281,7 +335,6 @@
           </button>
         </div>
 
-        <!-- 2 KARTU KPI ATAS -->
         <div class="grid grid-cols-2 gap-2.5">
           <div class="banner-glass-card rounded-2xl p-4 border-l-4 border-[#237059]">
             <span class="text-[11px] font-bold text-[#5B8780] block mb-1">Fee Bersih</span>
@@ -293,31 +346,28 @@
           </div>
         </div>
 
-        <!-- FILTER CHIPS STATUS -->
         <div class="flex items-center gap-2 text-xs font-semibold">
           <button onclick="filterJastipTab('semua')" id="jtab-semua" class="px-4 py-1.5 rounded-full bg-[#5B8780] text-white font-extrabold shadow transition">Semua</button>
           <button onclick="filterJastipTab('belum')" id="jtab-belum" class="px-4 py-1.5 rounded-full banner-glass-card border border-white text-[#1E3631] transition">Belum lunas</button>
           <button onclick="filterJastipTab('lunas')" id="jtab-lunas" class="px-4 py-1.5 rounded-full banner-glass-card border border-white text-[#1E3631] transition">Lunas</button>
         </div>
 
-        <!-- LIST DAFTAR KARTU JASTIP -->
         <div id="jastip-cards-container" class="space-y-3"></div>
-
       </section>
 
       <!-- ============================================================== -->
-      <!-- [MODUL 3] REKAP BELANJA                                        -->
+      <!-- [MODUL 3] REKAP BELANJA (KARTU MOBILE & TABEL RESMI CETAK/PDF) -->
       <!-- ============================================================== -->
       <section id="module-rekap" class="hidden space-y-3">
         
-        <!-- HEADER PRINT LEMBAR A4 RESMI -->
-        <div class="hidden print-only-header text-center mb-4">
+        <!-- HEADER PRINT LEMBAR A4 RESMI (SINKRON DENGAN DOKUMEN ASLI) -->
+        <div class="hidden print-only-header text-center mb-3">
           <h1 class="text-xl font-black text-black uppercase tracking-wider">LEMBAR REKAP PENGELUARAN & TAGIHAN</h1>
           <p class="text-xs text-gray-700 mt-0.5" id="print-date-display">Periode Aktif: -</p>
           <hr class="border-black mt-2">
         </div>
 
-        <!-- HEADER REKAP BELANJA DI HP -->
+        <!-- HEADER REKAP BELANJA DI LAYAR HP -->
         <div class="flex items-center justify-between no-print">
           <h1 class="text-lg font-extrabold text-[#1E3631] tracking-tight">Rekap Belanja</h1>
           
@@ -333,8 +383,8 @@
           </div>
         </div>
 
-        <!-- KARTU UTAMA TOTAL SISA BELUM LUNAS -->
-        <div class="banner-glass-card rounded-2xl p-4 space-y-2 border-l-4 border-amber-500">
+        <!-- KARTU UTAMA TOTAL SISA BELUM LUNAS (MOBILE VIEW) -->
+        <div class="banner-glass-card rounded-2xl p-4 space-y-2 border-l-4 border-amber-500 no-print">
           <span class="text-xs font-bold text-[#5B8780]">Total sisa belum lunas</span>
           <h2 class="text-3xl font-black text-amber-700 tracking-tight" id="rekap-kpi-sisa">Rp 0</h2>
           
@@ -348,7 +398,7 @@
           </div>
         </div>
 
-        <!-- 2 TOMBOL UTAMA -->
+        <!-- 2 TOMBOL UTAMA MOBILE -->
         <div class="grid grid-cols-2 gap-2.5 no-print">
           <button onclick="openRekapModalForAdd()" class="py-3 px-4 rounded-2xl bg-[#5B8780] hover:bg-[#466964] active:scale-95 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 transition">
             <i class="fa-regular fa-square-plus text-sm"></i> Input tagihan
@@ -358,31 +408,44 @@
           </button>
         </div>
 
-        <!-- LIST DAFTAR KARTU PENGELUARAN -->
+        <!-- LIST DAFTAR KARTU PENGELUARAN MOBILE VIEW -->
         <div id="rekap-cards-container" class="space-y-2.5 no-print"></div>
 
         <p class="text-center text-[10px] text-[#5B8780] font-medium no-print pt-2">
           Cetak A4 dan sinkron ada di menu titik tiga
         </p>
 
-        <!-- TABEL PRINT KHUSUS MEDIA PRINT A4 -->
-        <div class="hidden print-table-container">
-          <table class="w-full text-left text-xs border-collapse">
+        <!-- ============================================================== -->
+        <!-- TABEL RESMI SPREADSHEET (DIGUNAKAN UNTUK CETAK & FILE PDF A4)  -->
+        <!-- Persis Format Kolom: Tgl Tempo | Pengeluaran | Harga | Catatan | Total -->
+        <!-- ============================================================== -->
+        <div class="hidden print-table-area w-full overflow-x-auto">
+          <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-zinc-200 text-black font-extrabold">
-                <th class="py-2 px-2 text-center" style="width: 6%;">No</th>
-                <th class="py-2 px-3" style="width: 22%;">Tanggal Jatuh Tempo</th>
-                <th class="py-2 px-3" style="width: 32%;">Pengeluaran</th>
-                <th class="py-2 px-3 text-right" style="width: 20%;">Harga</th>
-                <th class="py-2 px-3" style="width: 20%;">Catatan</th>
+              <tr class="bg-[#BBD7CE] text-[#1E3631] text-[11px] font-black uppercase border-b-2 border-emerald-900/30">
+                <th class="py-2.5 px-2 text-center" style="width: 6%;">No</th>
+                <th class="py-2.5 px-3" style="width: 22%;">Tanggal Jatuh Tempo</th>
+                <th class="py-2.5 px-3" style="width: 30%;">Pengeluaran</th>
+                <th class="py-2.5 px-3 text-right" style="width: 18%;">Harga</th>
+                <th class="py-2.5 px-3" style="width: 14%;">Catatan</th>
+                <th class="py-2.5 px-3 text-right" style="width: 10%;">Total</th>
               </tr>
             </thead>
-            <tbody id="rekap-print-tbody"></tbody>
-            <tfoot>
-              <tr>
-                <td colspan="3" class="py-2 px-3 text-center font-bold">TOTAL KESELURUHAN</td>
-                <td class="py-2 px-3 text-right font-black" id="print-foot-total">Rp 0</td>
-                <td></td>
+            <tbody id="rekap-print-tbody" class="divide-y divide-gray-300 text-xs">
+              <!-- Baris data tabel akan diisi otomatis -->
+            </tbody>
+            <tfoot class="border-t-2 border-emerald-900/30 text-xs font-black">
+              <!-- FOOTER TOTAL IDENTIK KOTAK WARNA SHEET -->
+              <tr class="footer-total-row">
+                <td colspan="3" class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL KESELURUHAN</td>
+                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-keseluruhan">Rp 0</td>
+                <td class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL CICILAN</td>
+                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-cicilan">Rp 0</td>
+              </tr>
+              <tr class="footer-total-row border-t border-gray-300">
+                <td colspan="3" class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL SISA</td>
+                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-sisa">Rp 0</td>
+                <td colspan="2" class="py-2 px-3 text-[10px] text-gray-600 font-normal italic">*Sisa pengeluaran belum lunas</td>
               </tr>
             </tfoot>
           </table>
@@ -403,42 +466,33 @@
 
     </main>
 
-    <!-- ============================================================== -->
-    <!-- BOTTOM NAVIGATION BAR (HP) DENGAN WARNA HARMONIS               -->
-    <!-- ============================================================== -->
+    <!-- BOTTOM NAVIGATION BAR (HP) -->
     <nav class="bottom-nav-bar fixed bottom-0 left-0 right-0 z-40 banner-glass-card border-t border-white/80 max-w-md mx-auto px-4 py-2 flex items-center justify-between text-[11px] font-bold no-print shadow-2xl">
-      
-      <!-- TAB 1: KAS -->
       <button onclick="switchAppTab('tab-kas')" id="nav-btn-kas" class="flex flex-col items-center gap-1 text-[#237059] py-1 flex-1 transition">
         <i class="fa-solid fa-wallet text-base"></i>
         <span>Kas</span>
       </button>
 
-      <!-- TAB 2: JASTIP -->
       <button onclick="switchAppTab('tab-jastip')" id="nav-btn-jastip" class="flex flex-col items-center gap-1 text-[#5B8780] py-1 flex-1 transition">
         <i class="fa-solid fa-bag-shopping text-base"></i>
         <span>Jastip</span>
       </button>
 
-      <!-- TOMBOL PLUS TENGAH (AKSI CEPAT) -->
       <div class="flex flex-col items-center justify-center flex-1">
         <button onclick="triggerQuickAction()" class="w-12 h-12 -mt-6 rounded-full bg-[#5B8780] hover:bg-[#466964] active:scale-90 text-white shadow-xl flex items-center justify-center text-lg transition border-2 border-white" title="Tambah Cepat">
           <i class="fa-solid fa-plus font-bold"></i>
         </button>
       </div>
 
-      <!-- TAB 3: BELANJA -->
       <button onclick="switchAppTab('tab-rekap')" id="nav-btn-rekap" class="flex flex-col items-center gap-1 text-[#5B8780] py-1 flex-1 transition">
         <i class="fa-solid fa-table-list text-base"></i>
         <span>Belanja</span>
       </button>
 
-      <!-- TAB 4: RIWAYAT -->
       <button onclick="switchAppTab('tab-riwayat')" id="nav-btn-riwayat" class="flex flex-col items-center gap-1 text-[#5B8780] py-1 flex-1 transition">
         <i class="fa-solid fa-clock-rotate-left text-base"></i>
         <span>Riwayat</span>
       </button>
-
     </nav>
   </div>
 
@@ -452,7 +506,7 @@
       
       <button onclick="toggleModal('modal-menu-titik-tiga', false); window.print();" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white text-left text-xs font-bold text-[#1E3631] transition">
         <i class="fa-solid fa-print text-indigo-600 w-5"></i>
-        <span>Cetak Lembar Dokumen A4</span>
+        <span>Cetak Lembar Dokumen A4 (Format Tabel Asli)</span>
       </button>
 
       <button onclick="toggleModal('modal-menu-titik-tiga', false); openCreateSheetModal();" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white text-left text-xs font-bold text-[#1E3631] transition">
@@ -764,7 +818,7 @@
     document.getElementById('kas_date').value = todayISO;
     document.getElementById('splash-date').innerText = new Date().toLocaleDateString('id-ID', { dateStyle: 'full' });
 
-    // ================= SINKRONISASI REAL-TIME =================
+    // ================= SINKRONISASI REAL-TIME DUA ARAH =================
     async function postDataRealTime(url, payload) {
       try {
         await fetch(url, {
@@ -867,7 +921,6 @@
       }
     }
 
-    // ================= SWITCH TAB (BOTTOM NAV HP) =================
     function switchAppTab(tabId) {
       currentAppTab = tabId;
       localStorage.setItem('fm_active_tab', tabId);
@@ -913,7 +966,6 @@
       localStorage.setItem('fm_dashboard_unlocked', 'true');
       document.getElementById('splash-screen').classList.add('slide-up');
       
-      // Sinkronkan latar belakang dasbor ke warna pastel teal khas sebelumnya
       document.body.style.backgroundColor = '#94B5B0';
       document.documentElement.style.backgroundColor = '#94B5B0';
       const metaTheme = document.getElementById('theme-color-meta');
@@ -928,7 +980,6 @@
       closeFlowmasterDropdown();
       document.body.classList.add('overflow-hidden');
       
-      // Kembalikan ke warna gelap pembuka tanpa celah
       document.body.style.backgroundColor = '#23433C';
       document.documentElement.style.backgroundColor = '#23433C';
       const metaTheme = document.getElementById('theme-color-meta');
@@ -936,6 +987,39 @@
 
       document.getElementById('main-app-container').classList.add('opacity-0', 'pointer-events-none');
       document.getElementById('splash-screen').classList.remove('slide-up');
+    }
+
+    function toggleFlowmasterDropdown(e) {
+      if (e) e.stopPropagation();
+      const dd = document.getElementById('flowmaster-dropdown');
+      const chev = document.getElementById('flowmaster-chevron');
+      const isOpen = dd.classList.contains('dropdown-open');
+      if (isOpen) closeFlowmasterDropdown();
+      else {
+        dd.classList.remove('dropdown-closed');
+        dd.classList.add('dropdown-open');
+        chev.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    function closeFlowmasterDropdown() {
+      const dd = document.getElementById('flowmaster-dropdown');
+      const chev = document.getElementById('flowmaster-chevron');
+      if (!dd) return;
+      dd.classList.remove('dropdown-open');
+      dd.classList.add('dropdown-closed');
+      if (chev) chev.style.transform = 'rotate(0deg)';
+    }
+
+    document.addEventListener('click', function(e) {
+      const container = document.getElementById('flowmaster-menu-container');
+      if (container && !container.contains(e.target)) closeFlowmasterDropdown();
+    });
+
+    function selectMenu(tabId, labelText) {
+      document.getElementById('current-menu-label').innerText = labelText;
+      closeFlowmasterDropdown();
+      switchAppTab(tabId);
     }
 
     function formatRupiah(num) {
@@ -977,7 +1061,7 @@
       const name = input.value.trim();
       if (!name) return alert("Masukkan nama pemilik!");
       if (ownersList.some(o => o.toLowerCase() === name.toLowerCase())) {
-        return alert("Nama sudah terdaftar!");
+        return alert("Nama pemilik sudah terdaftar!");
       }
       ownersList.push(name);
       saveOwnersList();
@@ -1123,7 +1207,6 @@
 
       document.getElementById('banner-jatuh-tempo-text').innerText = `${jatuhTempoHariIniCount} tagihan jatuh tempo hari ini`;
 
-      // Kartu Pemilik
       document.getElementById('dynamic-owner-cards-container').innerHTML = ownersList.map((name, i) => `
         <div class="banner-glass-card rounded-2xl p-4 border-l-4 ${i % 2 === 0 ? 'border-[#5B8780]' : 'border-[#F9CE77]'}">
           <span class="text-xs font-semibold text-[#5B8780] block">${name}</span>
@@ -1379,7 +1462,7 @@ Terima kasih banyak! 🙏`;
       doc.save(`Invoice_${o.custName}.pdf`);
     }
 
-    // ================= REKAP BELANJA =================
+    // ================= REKAP BELANJA (KARTU MOBILE & TABEL RESMI) =================
     function toggleCicilanBreakdownField() {
       const isCicilan = document.getElementById('r_is_cicilan').value === 'cicilan';
       document.getElementById('cicilan_breakdown_container').classList.toggle('hidden', !isCicilan);
@@ -1437,15 +1520,20 @@ Terima kasih banyak! 🙏`;
     }
 
     function renderRekapTable() {
-      let totalKeseluruhan = 0, totalSisa = 0, totalTerbayar = 0;
+      let totalKeseluruhan = 0, totalSisa = 0, totalTerbayar = 0, totalCicilan = 0;
 
       rekapBelanjaList.forEach(item => {
         const val = Number(item.harga) || 0;
         totalKeseluruhan += val;
+        
+        const isCicil = (item.totalJenis || '').toLowerCase().includes('cicil');
+        if (isCicil) totalCicilan += val;
+
         if (item.statusLunas !== 'lunas') totalSisa += val;
         else totalTerbayar += val;
       });
 
+      // Update KPI Angka
       document.getElementById('rekap-kpi-sisa').innerText = formatRupiah(totalSisa);
       document.getElementById('rekap-kpi-total').innerText = formatRupiah(totalKeseluruhan);
       document.getElementById('rekap-kpi-terbayar').innerText = formatRupiah(totalTerbayar);
@@ -1453,6 +1541,7 @@ Terima kasih banyak! 🙏`;
       const pct = totalKeseluruhan > 0 ? Math.round((totalSisa / totalKeseluruhan) * 100) : 0;
       document.getElementById('rekap-progress-bar').style.width = `${pct}%`;
 
+      // 1. RENDER KARTU TAMPILAN MOBILE HP (SESUAI GAMBAR ANDA)
       const container = document.getElementById('rekap-cards-container');
       if (!rekapBelanjaList.length) {
         container.innerHTML = `<div class="p-6 text-center text-xs text-[#5B8780] font-bold">Belum ada tagihan belanja di sheet ${activeSheetName}.</div>`;
@@ -1484,6 +1573,7 @@ Terima kasih banyak! 🙏`;
         }).join('');
       }
 
+      // 2. RENDER FORMAT TABEL RESMI SPREADSHEET (DIGUNAKAN PRINT & PDF A4)
       document.getElementById('rekap-print-tbody').innerHTML = rekapBelanjaList.map((item, idx) => `
         <tr>
           <td class="text-center font-bold">${idx + 1}</td>
@@ -1491,9 +1581,14 @@ Terima kasih banyak! 🙏`;
           <td class="font-bold">${item.pengeluaran}</td>
           <td class="text-right font-black">${formatRupiah(item.harga)}</td>
           <td>${item.catatan || '-'}</td>
+          <td class="text-right font-semibold">${item.totalJenis || 'Rutin'}</td>
         </tr>
       `).join('');
-      document.getElementById('print-foot-total').innerText = formatRupiah(totalKeseluruhan);
+
+      // Update Angka Footer Cetak A4
+      document.getElementById('print-foot-total-keseluruhan').innerText = formatRupiah(totalKeseluruhan);
+      document.getElementById('print-foot-total-cicilan').innerText = formatRupiah(totalCicilan);
+      document.getElementById('print-foot-total-sisa').innerText = formatRupiah(totalSisa);
     }
 
     document.getElementById('rekap-item-form').addEventListener('submit', async function(e) {
@@ -1605,10 +1700,11 @@ Terima kasih banyak! 🙏`;
       setTimeout(() => fetchFromRekapSps(false), 1500);
     }
 
+    // ================= BAGIKAN / KIRIM PDF RESMI BERKAS TABEL =================
     async function generateAndSendPdfToWa() {
       const btn = document.getElementById('btn-wa-pdf');
       const originalText = btn.innerHTML;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Merender...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Merender PDF...`;
       btn.disabled = true;
 
       try {
@@ -1624,7 +1720,7 @@ Terima kasih banyak! 🙏`;
 💰 *Total Tagihan:* ${document.getElementById('rekap-kpi-total').innerText}
 ⚠️ *Total Sisa:* ${document.getElementById('rekap-kpi-sisa').innerText}
 
-📎 *Unduh/Lihat Berkas PDF:*
+📎 *Unduh/Lihat Berkas PDF Format Tabel Asli:*
 ${res.pdfUrl}`;
 
           window.open(`https://wa.me/?text=${encodeURIComponent(textWa)}`, '_blank');
