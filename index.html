@@ -63,7 +63,6 @@
         height: auto !important;
         overflow: visible !important;
       }
-      /* Sembunyikan elemen layar HP yang tidak perlu di lembar cetak */
       #splash-screen, header, .bottom-nav-bar, .no-print, #modal-rekap, #modal-manage-owners, #modal-create-sheet, #wa-invoice-modal, #jastip-modal, #modal-menu-titik-tiga, #modal-sheet-picker, #modal-kas-form, .background-blobs {
         display: none !important;
       }
@@ -76,7 +75,6 @@
         min-height: auto !important;
         overflow: visible !important;
       }
-      /* Buka kunci lebar max-w-md agar tabel memakai lebar penuh kertas A4 */
       #main-app-container main {
         max-width: 100% !important;
         width: 100% !important;
@@ -99,7 +97,6 @@
         padding: 0 !important;
       }
       
-      /* TAMPILAN RESMI TABEL SPREADSHEET SESUAI EXCEL ASLI */
       .print-table-area {
         display: block !important;
         width: 100% !important;
@@ -448,12 +445,12 @@
         <!-- TABEL RESMI SPREADSHEET (DIGUNAKAN UNTUK CETAK & FILE PDF A4)  -->
         <!-- Persis Format Kolom: Tgl Tempo | Pengeluaran | Harga | Catatan | Total -->
         <!-- ============================================================== -->
-       <div class="hidden print-table-area w-full overflow-x-auto">
+      <div class="hidden print-table-area w-full overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-[#BBD7CE] text-[#1E3631] text-[11px] font-black uppercase border-b-2 border-emerald-900/30">
                 <th class="py-2.5 px-2 text-center" style="width: 1%;">No</th>
-                <th class="py-2.5 px-3" style="width: 18%;">Tanggal Jatuh Tempo</th>
+                <th class="py-2.5 px-3 text-center" style="width: 18%;">Tanggal Jatuh Tempo</th>
                 <th class="py-2.5 px-3">Pengeluaran</th>
                 <th class="py-2.5 px-3 text-right" style="width: 18%;">Harga</th>
                 <th class="py-2.5 px-3" style="width: 14%;">Catatan</th>
@@ -464,7 +461,6 @@
               <!-- Baris data tabel akan diisi otomatis -->
             </tbody>
             <tfoot class="border-t-2 border-emerald-900/30 text-xs font-black">
-              <!-- FOOTER TOTAL IDENTIK KOTAK WARNA SHEET -->
               <tr class="footer-total-row">
                 <td colspan="3" class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL KESELURUHAN</td>
                 <td class="val-cell print-nowrap py-2 px-3 text-right" id="print-foot-total-keseluruhan">Rp 0</td>
@@ -479,7 +475,6 @@
             </tfoot>
           </table>
         </div>
-
       </section>
 
       <!-- ============================================================== -->
@@ -1603,16 +1598,48 @@ Terima kasih banyak! 🙏`;
       }
 
       // 2. RENDER FORMAT TABEL RESMI SPREADSHEET (DIGUNAKAN PRINT & PDF A4)
-      document.getElementById('rekap-print-tbody').innerHTML = rekapBelanjaList.map((item, idx) => `
-        <tr>
-          <td class="text-center font-bold">${idx + 1}</td>
-          <td>${item.tglTempo || '-'}</td>
-          <td class="font-bold">${item.pengeluaran}</td>
-          <td class="text-right font-black">${formatRupiah(item.harga)}</td>
-          <td>${item.catatan || '-'}</td>
-          <td class="text-right font-semibold">${item.totalJenis || 'Rutin'}</td>
-        </tr>
-      `).join('');
+      const displayDates = [];
+      let lastValidDate = '-';
+      rekapBelanjaList.forEach(item => {
+        const rawDate = (item.tglTempo || '').trim();
+        if (rawDate && rawDate !== '-') {
+          lastValidDate = rawDate;
+          displayDates.push(rawDate);
+        } else {
+          displayDates.push(lastValidDate);
+        }
+      });
+
+      const dateRowSpans = new Array(rekapBelanjaList.length).fill(1);
+      for (let i = 0; i < displayDates.length; i++) {
+        if (i > 0 && displayDates[i] === displayDates[i - 1]) {
+          dateRowSpans[i] = 0;
+        } else {
+          let span = 1;
+          while (i + span < displayDates.length && displayDates[i + span] === displayDates[i]) {
+            span++;
+          }
+          dateRowSpans[i] = span;
+        }
+      }
+
+      document.getElementById('rekap-print-tbody').innerHTML = rekapBelanjaList.map((item, idx) => {
+        const span = dateRowSpans[idx];
+        const tglCellHtml = span > 0
+          ? `<td class="print-nowrap text-center align-middle font-semibold" rowspan="${span}">${displayDates[idx]}</td>`
+          : '';
+
+        return `
+          <tr>
+            <td class="print-nowrap text-center font-bold">${idx + 1}</td>
+            ${tglCellHtml}
+            <td class="print-wrap font-bold">${item.pengeluaran}</td>
+            <td class="print-nowrap text-right font-black">${formatRupiah(item.harga)}</td>
+            <td class="print-wrap">${item.catatan || '-'}</td>
+            <td class="print-nowrap text-right font-semibold">${item.totalJenis || 'Rutin'}</td>
+          </tr>
+        `;
+      }).join('');
 
       // Update Angka Footer Cetak A4
       document.getElementById('print-foot-total-keseluruhan').innerText = formatRupiah(totalKeseluruhan);
