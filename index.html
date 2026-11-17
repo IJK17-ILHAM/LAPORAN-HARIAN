@@ -52,7 +52,7 @@
     /* ================= ATURAN CETAK / EXPORT PDF A4 (TABEL RESMI SPREADSHEET) ================= */
     @page {
       size: A4 portrait;
-      margin: 10mm 10mm 15mm 10mm;
+      margin: 12mm 10mm 15mm 10mm;
     }
 
     @media print {
@@ -61,9 +61,10 @@
         color: #000000 !important;
         width: 100% !important;
         height: auto !important;
+        overflow: visible !important;
       }
       /* Sembunyikan elemen layar HP yang tidak perlu di lembar cetak */
-      #splash-screen, header, .bottom-nav-bar, .no-print, #modal-rekap, #modal-manage-owners, #modal-create-sheet, #wa-invoice-modal, #jastip-modal, #modal-menu-titik-tiga, .background-blobs {
+      #splash-screen, header, .bottom-nav-bar, .no-print, #modal-rekap, #modal-manage-owners, #modal-create-sheet, #wa-invoice-modal, #jastip-modal, #modal-menu-titik-tiga, #modal-sheet-picker, #modal-kas-form, .background-blobs {
         display: none !important;
       }
       #main-app-container {
@@ -73,6 +74,14 @@
         margin: 0 !important;
         width: 100% !important;
         min-height: auto !important;
+        overflow: visible !important;
+      }
+      /* Buka kunci lebar max-w-md agar tabel memakai lebar penuh kertas A4 */
+      #main-app-container main {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
       #module-kas, #module-jastip, #module-riwayat {
         display: none !important;
@@ -94,20 +103,38 @@
       .print-table-area {
         display: block !important;
         width: 100% !important;
+        overflow: visible !important;
       }
       .print-table-area table {
         width: 100% !important;
         border-collapse: collapse !important;
-        table-layout: fixed !important;
-        font-size: 10pt !important;
+        table-layout: auto !important;
+        font-size: 9.5pt !important;
         border: 1.5px solid #23433C !important;
+      }
+      .print-table-area thead {
+        display: table-header-group !important;
+      }
+      .print-table-area tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
       .print-table-area th, 
       .print-table-area td {
         border: 1px solid #7c948e !important;
         padding: 6px 8px !important;
         color: #000000 !important;
-        word-wrap: break-word !important;
+        vertical-align: middle !important;
+      }
+      .print-table-area th {
+        white-space: nowrap !important;
+      }
+      .print-table-area td.print-nowrap {
+        white-space: nowrap !important;
+      }
+      .print-table-area td.print-wrap {
+        white-space: normal !important;
+        word-break: break-word !important;
       }
       .print-table-area thead tr {
         background-color: #BBD7CE !important;
@@ -121,6 +148,7 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
         font-weight: 800 !important;
+        white-space: nowrap !important;
       }
       .print-table-area tfoot tr.footer-total-row td.val-cell {
         background-color: #f1a7a7 !important;
@@ -128,6 +156,7 @@
         print-color-adjust: exact;
         color: #851d1d !important;
         font-weight: 900 !important;
+        white-space: nowrap !important;
       }
       .print-only-header {
         display: block !important;
@@ -419,16 +448,16 @@
         <!-- TABEL RESMI SPREADSHEET (DIGUNAKAN UNTUK CETAK & FILE PDF A4)  -->
         <!-- Persis Format Kolom: Tgl Tempo | Pengeluaran | Harga | Catatan | Total -->
         <!-- ============================================================== -->
-        <div class="hidden print-table-area w-full overflow-x-auto">
+       <div class="hidden print-table-area w-full overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-[#BBD7CE] text-[#1E3631] text-[11px] font-black uppercase border-b-2 border-emerald-900/30">
-                <th class="py-2.5 px-2 text-center" style="width: 6%;">No</th>
-                <th class="py-2.5 px-3" style="width: 22%;">Tanggal Jatuh Tempo</th>
-                <th class="py-2.5 px-3" style="width: 30%;">Pengeluaran</th>
+                <th class="py-2.5 px-2 text-center" style="width: 1%;">No</th>
+                <th class="py-2.5 px-3" style="width: 18%;">Tanggal Jatuh Tempo</th>
+                <th class="py-2.5 px-3">Pengeluaran</th>
                 <th class="py-2.5 px-3 text-right" style="width: 18%;">Harga</th>
                 <th class="py-2.5 px-3" style="width: 14%;">Catatan</th>
-                <th class="py-2.5 px-3 text-right" style="width: 10%;">Total</th>
+                <th class="py-2.5 px-3 text-right" style="width: 12%;">Total</th>
               </tr>
             </thead>
             <tbody id="rekap-print-tbody" class="divide-y divide-gray-300 text-xs">
@@ -438,13 +467,13 @@
               <!-- FOOTER TOTAL IDENTIK KOTAK WARNA SHEET -->
               <tr class="footer-total-row">
                 <td colspan="3" class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL KESELURUHAN</td>
-                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-keseluruhan">Rp 0</td>
+                <td class="val-cell print-nowrap py-2 px-3 text-right" id="print-foot-total-keseluruhan">Rp 0</td>
                 <td class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL CICILAN</td>
-                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-cicilan">Rp 0</td>
+                <td class="val-cell print-nowrap py-2 px-3 text-right" id="print-foot-total-cicilan">Rp 0</td>
               </tr>
               <tr class="footer-total-row border-t border-gray-300">
                 <td colspan="3" class="label-cell py-2 px-3 text-center uppercase tracking-wider">TOTAL SISA</td>
-                <td class="val-cell py-2 px-3 text-right" id="print-foot-total-sisa">Rp 0</td>
+                <td class="val-cell print-nowrap py-2 px-3 text-right" id="print-foot-total-sisa">Rp 0</td>
                 <td colspan="2" class="py-2 px-3 text-[10px] text-gray-600 font-normal italic">*Sisa pengeluaran belum lunas</td>
               </tr>
             </tfoot>
